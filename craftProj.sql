@@ -4,6 +4,7 @@ create table if not exists itens(
     id_categoria int,
     quantidade int,
     dano double,
+	item_Img varchar(300),
     nome varchar(50),
     constraint id_categoria foreign key(id_categoria) references categoria(id_categoria)
 );
