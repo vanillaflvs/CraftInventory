@@ -35,4 +35,5 @@ insert into categoria values(
 	( 'Bloco')
 );
 
+insert into jogador values(10.0, 67, "Manoel Gomes", "");
 
