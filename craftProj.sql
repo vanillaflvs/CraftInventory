@@ -1,6 +1,6 @@
 create database projMine;
 create table if not exists itens(
-	id_iten int primary key,
+	id_item int primary key auto_increment,
     id_categoria int,
     quantidade int,
     dano double,
@@ -12,7 +12,7 @@ create table categoria(
     tipo varchar(30)
 );
 create table jogador(
-	id_jogador int primary key,
+	id_jogador int primary key auto_increment,
 	vida double,
     nivel int,
 	apelido varchar(50),
@@ -21,9 +21,18 @@ create table jogador(
 );
 create table itens_Jogador(
 		id_jogador int,
-		id_iten  int,
+		id_item  int,
 		constraint id_jogador foreign key(id_jogador) references jogador(id_jogador),
-		constraint id_iten foreign key(id_iten) references iten(id_iten)
+		constraint id_item foreign key(id_item) references itens(id_item)
+);
+
+
+insert into categoria values(
+	( 'Arma'),
+	( 'Armadura'),
+	( 'Ferramenta'),
+	( 'Comida'),
+	( 'Bloco')
 );
 
 
