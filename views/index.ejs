@@ -1,11 +1,448 @@
+
 <!DOCTYPE html>
-<html>
-  <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  <body>
-    <h1><%= title %></h1>
-    <p>Projeto CraftInventory</p>
-  </body>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>CraftInventory</title>
+
+    <link rel="stylesheet" href="/stylesheets/style.css">
+
+    <script defer src="/javascripts/inventory.js"></script>
+</head>
+
+<body>
+
+    <div class="world-background"></div>
+
+    <!-- TELA DE LOGIN -->
+
+    <section id="login" class="login-screen">
+
+        <div class="login-content">
+
+            <div class="minecraft-title">
+                CRAFTINVENTORY
+            </div>
+
+            <div class="splash">
+                Your inventory, your world!
+            </div>
+
+            <form id="loginForm" class="login-form">
+
+                <label for="nickname">
+                    Nome do jogador
+                </label>
+
+                <input
+                    type="text"
+                    id="nickname"
+                    placeholder="Steve"
+                    maxlength="50"
+                    autocomplete="username"
+                    required
+                >
+
+                <button type="submit" class="mc-button">
+                    Entrar no mundo
+                </button>
+
+            </form>
+
+        </div>
+
+        <div class="login-footer">
+            <span>CraftInventory 1.0</span>
+            <span>Projeto acadêmico</span>
+        </div>
+
+    </section>
+
+    <!-- TELA PRINCIPAL -->
+
+    <main id="game" hidden>
+
+        <header class="game-header">
+
+            <span id="player"></span>
+
+            <button id="logout" class="mc-button">
+                Salvar e sair
+            </button>
+
+        </header>
+
+        <div class="game-layout">
+
+            <!-- LADO ESQUERDO -->
+
+            <div class="player-area">
+
+                <section class="inventory">
+
+                    <div class="inventory-top">
+
+                        <!-- ARMADURA -->
+
+                        <div id="armor" class="armor"></div>
+
+                        <!-- PERSONAGEM -->
+
+                        <div class="character">
+
+                            <div class="character-shadow"></div>
+
+                            <div class="steve">
+
+                                <div class="steve-head">
+
+                                    <div class="steve-hair"></div>
+
+                                    <div class="steve-eyes">
+                                        <i></i>
+                                        <i></i>
+                                    </div>
+
+                                    <div class="steve-nose"></div>
+                                    <div class="steve-mouth"></div>
+
+                                </div>
+
+                                <div class="steve-body"></div>
+
+                                <div class="steve-arm left"></div>
+                                <div class="steve-arm right"></div>
+
+                                <div class="steve-leg left"></div>
+                                <div class="steve-leg right"></div>
+
+                            </div>
+
+                        </div>
+
+                        <!-- CRAFTING -->
+
+                        <div class="crafting">
+
+                            <span class="crafting-title">
+                                Crafting
+                            </span>
+
+                            <div class="crafting-area">
+
+                                <div class="crafting-grid">
+
+                                    <div class="slot"></div>
+                                    <div class="slot"></div>
+                                    <div class="slot"></div>
+                                    <div class="slot"></div>
+
+                                </div>
+
+                                <div class="arrow"></div>
+
+                                <div class="slot result"></div>
+
+                            </div>
+
+                            <div class="crafting-bottom">
+
+                                <div class="slot offhand">
+
+                                    <svg viewBox="0 0 16 16"
+                                         shape-rendering="crispEdges">
+
+                                        <path
+                                            fill="#303030"
+                                            d="M3 2H13V9L8 14L3 9Z"
+                                        />
+
+                                        <path
+                                            fill="#656565"
+                                            d="M5 4H11V8L8 11L5 8Z"
+                                        />
+
+                                    </svg>
+
+                                </div>
+
+                                <!-- Livro de receitas decorativo -->
+
+                                <div class="recipe-book"
+                                     title="Livro de receitas">
+
+                                    <svg viewBox="0 0 16 16"
+                                         shape-rendering="crispEdges">
+
+                                        <path
+                                            fill="#242424"
+                                            d="M1 4L11 1L15 5V12L5 15L1 11Z"
+                                        />
+
+                                        <path
+                                            fill="#376735"
+                                            d="M2 4L11 2L14 5L5 9Z"
+                                        />
+
+                                        <path
+                                            fill="#7EAD55"
+                                            d="M3 4L10 3L12 5L5 7Z"
+                                        />
+
+                                        <path
+                                            fill="#B8B8A1"
+                                            d="M5 9L14 6V10L5 13Z"
+                                        />
+
+                                        <path
+                                            fill="#565656"
+                                            d="M2 6L5 9V13L2 10Z"
+                                        />
+
+                                    </svg>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- INVENTÁRIO PRINCIPAL -->
+
+                    <div id="slots"
+                         class="inventory-grid">
+                    </div>
+
+                    <!-- HOTBAR -->
+
+                    <div id="hotbar"
+                         class="inventory-grid hotbar">
+                    </div>
+
+                </section>
+
+                <!-- HUD DO MINECRAFT -->
+
+                <div class="hud">
+
+                    <div class="hud-status">
+
+                        <div class="hearts">
+
+                            <span>♥</span>
+                            <span>♥</span>
+                            <span>♥</span>
+                            <span>♥</span>
+                            <span>♥</span>
+                            <span>♥</span>
+                            <span>♥</span>
+                            <span>♥</span>
+                            <span>♥</span>
+                            <span>♥</span>
+
+                        </div>
+
+                        <div class="hunger">
+
+                            <% for (let i = 0; i < 10; i++) { %>
+
+                                <svg viewBox="0 0 16 16"
+                                     shape-rendering="crispEdges">
+
+                                    <path
+                                        fill="#25201A"
+                                        d="M8 1H13V3H15V8H12V10H9V12H7V15H3V13H1V10H4V8H6V3H8Z"
+                                    />
+
+                                    <path
+                                        fill="#965B36"
+                                        d="M8 3H12V4H13V7H10V9H7V5H8Z"
+                                    />
+
+                                    <path
+                                        fill="#B9814B"
+                                        d="M9 3H12V5H9Z"
+                                    />
+
+                                    <path
+                                        fill="#A8A398"
+                                        d="M6 9H8V11H6V14H3V12H5Z"
+                                    />
+
+                                </svg>
+
+                            <% } %>
+
+                        </div>
+
+                    </div>
+
+                    <div class="experience">
+
+                        <span>10</span>
+
+                        <div class="experience-track">
+                            <div class="experience-fill"></div>
+                        </div>
+
+                    </div>
+
+                    <div id="hudHotbar"
+                         class="hud-hotbar">
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- LADO DIREITO: CATÁLOGO -->
+
+            <aside class="catalog">
+
+                <div class="catalog-header">
+
+                    <span class="catalog-title">
+                        Itens disponíveis
+                    </span>
+
+                </div>
+
+                <div id="catalog"
+                     class="catalog-grid">
+                </div>
+
+                <div class="catalog-footer">
+
+                    <input
+                        id="search"
+                        type="search"
+                        placeholder="Pesquisar..."
+                        autocomplete="off"
+                        aria-label="Pesquisar itens"
+                    >
+
+                    <div class="search-icon">
+
+                        <svg viewBox="0 0 16 16"
+                             shape-rendering="crispEdges">
+
+                            <path
+                                fill="#C6C6C6"
+                                d="M2 1H9V2H11V4H12V9H10V11H4V10H2V8H1V3H2Z"
+                            />
+
+                            <path
+                                fill="#424242"
+                                d="M4 3H8V4H10V8H8V9H4V8H3V4H4Z"
+                            />
+
+                            <path
+                                fill="#C6C6C6"
+                                d="M10 10H12V12H14V14H15V15H12V13H10Z"
+                            />
+
+                        </svg>
+
+                    </div>
+
+                </div>
+
+                <p id="status" role="status"></p>
+
+            </aside>
+
+        </div>
+
+    </main>
+
+    <!-- MODAL DE QUANTIDADE -->
+
+    <dialog id="editor" class="mc-dialog">
+
+        <form id="editForm">
+
+            <h2 id="modalTitle">
+                Adicionar item
+            </h2>
+
+            <div class="item-preview">
+
+                <img id="previewImage" alt="">
+
+                <span id="previewName"></span>
+
+            </div>
+
+            <label for="quantity">
+                Quantidade
+            </label>
+
+            <input
+                id="quantity"
+                type="number"
+                min="1"
+                max="64"
+                value="1"
+                required
+            >
+
+            <div class="quantity-buttons">
+
+                <button type="button" data-qty="1">
+                    1
+                </button>
+
+                <button type="button" data-qty="16">
+                    16
+                </button>
+
+                <button type="button" data-qty="32">
+                    32
+                </button>
+
+                <button type="button" data-qty="64">
+                    64
+                </button>
+
+            </div>
+
+            <button type="submit" class="mc-button">
+                Confirmar
+            </button>
+
+            <button
+                type="button"
+                id="remove"
+                class="mc-button danger">
+
+                Excluir item
+
+            </button>
+
+            <button
+                type="button"
+                id="cancel"
+                class="mc-button">
+
+                Cancelar
+
+            </button>
+
+        </form>
+
+    </dialog>
+
+    <!-- TOOLTIP -->
+
+    <div id="tooltip" hidden></div>
+
+</body>
+
 </html>
