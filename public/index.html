@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventário Clássico do Minecraft</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --mc-bg: #C6C6C6;
+            --mc-border-light: #FFFFFF;
+            --mc-border-dark: #555555;
+            --mc-slot-bg: #8B8B8B;
+            --mc-slot-shadow: #373737;
+            --mc-slot-highlight: #FFFFFF;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            font-family: 'Press Start 2P', monospace;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        body {
+            background-color: #1A1A1A;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* =========================================================
+           1. CENÁRIO DE FUNDO VOXEL DO MINECRAFT EMBAÇADO
+           ========================================================= */
+        .mc-scenery {
+            position: fixed;
+            inset: -24px;
+            z-index: 0;
+            filter: blur(6px);
+            transform: scale(1.04);
+            pointer-events: none;
+            background: linear-gradient(180deg, #6EA8FF 0%, #99C5FF 55%, #C4E0FF 100%);
+        }
+
+        .mc-scenery svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        /* Vinheta escura sutil sobre o fundo (como ao abrir o inventário no jogo) */
+        .mc-vignette {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            background: radial-gradient(circle at center, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0.65) 100%);
+        }
+
+        /* =========================================================
+           2. JANELA PRINCIPAL DO INVENTÁRIO AMPLIADA (588px)
+           ========================================================= */
+        .mc-window {
+            background-color: var(--mc-bg);
+            border: 4px solid #000000;
+            box-shadow:
+                inset 4px 4px 0px var(--mc-border-light),
+                inset -4px -4px 0px var(--mc-border-dark),
+                0 20px 48px rgba(0, 0, 0, 0.78);
+            padding: 20px;
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 588px;
+        }
+
+        /* Seção Superior: Armaduras (esquerda), Caixa Preta Vazia (centro) e Escudo (direita) */
+        .mc-top-section {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        /* Coluna dos 4 Slots Verticais de Armadura */
+        .mc-armor-col {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        /* Caixa preta rebaixada onde fica o espaço vazio do personagem (162x241px) */
+        .mc-player-box {
+            width: 162px;
+            height: 241px;
+            background-color: #000000;
+            border-top: 4px solid var(--mc-slot-shadow);
+            border-left: 4px solid var(--mc-slot-shadow);
+            border-right: 4px solid var(--mc-slot-highlight);
+            border-bottom: 4px solid var(--mc-slot-highlight);
+        }
+
+        /* Grades do Inventário (3x9 e 1x9) */
+        .mc-main-section {
+            margin-bottom: 15px;
+        }
+
+        .mc-hotbar-section {
+            padding-top: 5px;
+        }
+
+        .mc-grid-9 {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            gap: 3px;
+        }
+
+        /* Slots individuais do Inventário (58x58px) */
+        .mc-slot {
+            width: 58px;
+            height: 58px;
+            background-color: var(--mc-slot-bg);
+            border-top: 4px solid var(--mc-slot-shadow);
+            border-left: 4px solid var(--mc-slot-shadow);
+            border-right: 4px solid var(--mc-slot-highlight);
+            border-bottom: 4px solid var(--mc-slot-highlight);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .mc-slot:hover::after,
+        .mc-slot.selected::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-color: rgba(255, 255, 255, 0.35);
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .mc-slot.selected {
+            outline: 3px solid #FFFFFF;
+            z-index: 6;
+        }
+
+        /* Silhuetas dos slots vazios de armadura e escudo */
+        .slot-silhouette {
+            width: 38px;
+            height: 38px;
+            opacity: 0.45;
+            pointer-events: none;
+        }
+
+        /* =========================================================
+           3. BARRA LATERAL ESTILO JEI (CANTO DIREITO - ALTURA INTEIRA 100vh)
+           ========================================================= */
+        .jei-sidebar {
+            position: fixed;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            height: 100vh;
+            width: 252px;
+            z-index: 15;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: transparent;
+            padding: 8px 8px 8px 6px;
+        }
+
+        /* Cabeçalho JEI: Botão Anterior, Contador 1/16 e Botão Próximo */
+        .jei-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 36px;
+            flex-shrink: 0;
+        }
+
+        .jei-page-indicator {
+            color: #FFFFFF;
+            font-size: 13px;
+            text-shadow: 2px 2px 0px #3F3F3F;
+            letter-spacing: 0.5px;
+        }
+
+        /* Grade Central Dinâmica JEI: 6 colunas ocupando toda a altura disponível */
+        .jei-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(6, 38px);
+            grid-auto-rows: 38px;
+            gap: 2px;
+            justify-content: space-between;
+            align-content: start;
+            overflow: hidden;
+            margin: 8px 0;
+        }
+
+        .jei-cell {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            background: transparent;
+        }
+
+        .jei-cell:hover {
+            background-color: rgba(255, 255, 255, 0.35);
+        }
+
+        .jei-cell.has-item {
+            cursor: pointer;
+        }
+
+        .jei-cell img {
+            width: 34px;
+            height: 34px;
+            max-width: 92%;
+            max-height: 92%;
+            object-fit: contain;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            pointer-events: none;
+        }
+
+        /* Rodapé JEI: Caixa de Pesquisa + Botão Decorativo de Chave Inglesa */
+        .jei-footer {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            height: 36px;
+            flex-shrink: 0;
+        }
+
+        .jei-search {
+            flex: 1;
+            height: 36px;
+            background-color: #000000;
+            border: 2px solid #A0A0A0;
+            outline: 2px solid #000000;
+            outline-offset: -4px;
+            color: #FFFFFF;
+            font-size: 11px;
+            padding: 0 8px;
+            min-width: 0;
+        }
+
+        .jei-search:focus {
+            border-color: #FFFFFF;
+        }
+
+        /* Botões Quadrados Estilo Minecraft (Setas e Chave Inglesa) */
+        .jei-square-btn {
+            width: 36px;
+            height: 36px;
+            flex-shrink: 0;
+            background-color: #8B8B8B;
+            border: 2px solid #000000;
+            box-shadow:
+                inset 2px 2px 0px #C6C6C6,
+                inset -2px -2px 0px #555555;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 0;
+            color: #FFFFFF;
+        }
+
+        .jei-square-btn:hover {
+            background-color: #9B9B9B;
+            box-shadow:
+                inset 2px 2px 0px #DCDCDC,
+                inset -2px -2px 0px #656565;
+        }
+
+        .jei-square-btn:active {
+            box-shadow:
+                inset 2px 2px 0px #555555,
+                inset -2px -2px 0px #C6C6C6;
+        }
+
+        .jei-square-btn svg {
+            width: 20px;
+            height: 20px;
+            pointer-events: none;
+        }
+
+        /* Tooltip clássico estilo Minecraft com borda roxa ao passar o mouse nos itens JEI */
+        .mc-tooltip {
+            position: fixed;
+            z-index: 100;
+            pointer-events: none;
+            background-color: rgba(16, 0, 16, 0.94);
+            border: 2px solid #28007F;
+            box-shadow: 0 0 0 2px #100010;
+            color: #FFFFFF;
+            font-size: 10px;
+            line-height: 1.5;
+            padding: 6px 8px;
+            text-shadow: 2px 2px 0px #3F3F3F;
+            display: none;
+            white-space: nowrap;
+        }
+
+        /* =========================================================
+           4. RESPONSIVIDADE PARA TELAS MENORES
+           ========================================================= */
+        @media (max-width: 1180px) {
+            body {
+                padding-right: 268px;
+            }
+            .mc-window {
+                max-width: 484px;
+                padding: 16px;
+            }
+            .mc-slot {
+                width: 48px;
+                height: 48px;
+                border-width: 3px;
+            }
+            .slot-silhouette {
+                width: 32px;
+                height: 32px;
+            }
+            .mc-player-box {
+                width: 132px;
+                height: 198px;
+                border-width: 3px;
+            }
+        }
+
+        @media (max-width: 820px) {
+            body {
+                flex-direction: column;
+                padding: 12px;
+                overflow-y: auto;
+            }
+            .jei-sidebar {
+                position: relative;
+                right: auto;
+                top: auto;
+                bottom: auto;
+                height: 480px;
+                width: 252px;
+                margin-top: 16px;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .mc-window {
+                padding: 10px;
+                max-width: 362px;
+            }
+            .mc-slot {
+                width: 36px;
+                height: 36px;
+                border-width: 2px;
+            }
+            .slot-silhouette {
+                width: 24px;
+                height: 24px;
+            }
+            .mc-player-box {
+                width: 100px;
+                height: 150px;
+                border-width: 2px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. Cenário Voxel do Minecraft ao Fundo -->
+    <div class="mc-scenery" aria-hidden="true">
+        <svg viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+            <!-- Céu -->
+            <rect width="320" height="180" fill="#78A7FF"/>
+            <rect y="70" width="320" height="110" fill="#9BC2FF"/>
+
+            <!-- Sol Quadrado Clássico -->
+            <rect x="242" y="18" width="24" height="24" fill="#FFF8B8"/>
+            <rect x="245" y="21" width="18" height="18" fill="#FFFFFF"/>
+
+            <!-- Nuvens em Blocos -->
+            <g fill="#FFFFFF" opacity="0.92">
+                <rect x="20" y="22" width="56" height="8"/>
+                <rect x="28" y="16" width="32" height="6"/>
+                <rect x="115" y="32" width="72" height="8"/>
+                <rect x="128" y="26" width="40" height="6"/>
+                <rect x="210" y="50" width="48" height="6"/>
+            </g>
+            <g fill="#DCE8FF" opacity="0.85">
+                <rect x="20" y="30" width="56" height="3"/>
+                <rect x="115" y="40" width="72" height="3"/>
+            </g>
+
+            <!-- Montanhas Distantes (Silhueta em blocos) -->
+            <polygon points="0,120 0,88 16,88 16,80 32,80 32,72 56,72 56,80 72,80 72,92 96,92 96,100 120,100 120,84 144,84 144,76 168,76 168,88 192,88 192,98 224,98 224,82 252,82 252,70 280,70 280,84 304,84 304,92 320,92 320,120" fill="#6D8EC7"/>
+
+            <!-- Colinas Médias com Grama -->
+            <polygon points="0,130 0,104 24,104 24,96 64,96 64,104 104,104 104,112 152,112 152,102 196,102 196,94 240,94 240,104 288,104 288,98 320,98 320,130" fill="#5D9B3B"/>
+            <polygon points="0,130 0,108 24,108 24,100 64,100 64,108 104,108 104,116 152,116 152,106 196,106 196,98 240,98 240,108 288,108 288,102 320,102 320,130" fill="#79553A"/>
+
+            <!-- Árvores de Carvalho (Tronco + Folhas Voxel) -->
+            <!-- Árvore Esquerda -->
+            <rect x="38" y="80" width="6" height="16" fill="#664C32"/>
+            <rect x="40" y="80" width="2" height="16" fill="#4E3822"/>
+            <rect x="28" y="66" width="26" height="14" fill="#3B7A24"/>
+            <rect x="32" y="60" width="18" height="6" fill="#49932D"/>
+            <rect x="30" y="70" width="8" height="6" fill="#2D611B"/>
+
+            <!-- Árvore Centro-Direita -->
+            <rect x="214" y="78" width="6" height="16" fill="#664C32"/>
+            <rect x="204" y="64" width="26" height="14" fill="#3B7A24"/>
+            <rect x="208" y="58" width="18" height="6" fill="#49932D"/>
+            <rect x="218" y="68" width="8" height="6" fill="#2D611B"/>
+
+            <!-- Árvore Direita -->
+            <rect x="272" y="82" width="6" height="16" fill="#664C32"/>
+            <rect x="262" y="68" width="26" height="14" fill="#3B7A24"/>
+            <rect x="266" y="62" width="18" height="6" fill="#49932D"/>
+
+            <!-- Lago de Água Voxel à Direita -->
+            <rect x="168" y="124" width="152" height="18" fill="#2F6CE5"/>
+            <rect x="176" y="124" width="44" height="3" fill="#5B94FF"/>
+            <rect x="240" y="127" width="56" height="3" fill="#5B94FF"/>
+            <!-- Areia na margem -->
+            <rect x="156" y="122" width="16" height="6" fill="#DBD3A0"/>
+            <rect x="164" y="128" width="12" height="6" fill="#C7BE8B"/>
+
+            <!-- Terreno em Primeiro Plano (Blocos de Grama, Terra e Pedra) -->
+            <rect x="0" y="118" width="156" height="8" fill="#5B9E35"/>
+            <rect x="0" y="118" width="156" height="3" fill="#72B844"/>
+            <rect x="0" y="138" width="320" height="8" fill="#5B9E35"/>
+            <rect x="0" y="138" width="320" height="3" fill="#72B844"/>
+
+            <!-- Camada de Terra -->
+            <rect x="0" y="126" width="164" height="12" fill="#866043"/>
+            <rect x="0" y="146" width="320" height="16" fill="#866043"/>
+            <g fill="#6E4D34">
+                <rect x="12" y="149" width="6" height="4"/>
+                <rect x="38" y="153" width="8" height="4"/>
+                <rect x="74" y="148" width="6" height="5"/>
+                <rect x="118" y="152" width="7" height="4"/>
+                <rect x="166" y="149" width="8" height="4"/>
+                <rect x="212" y="154" width="6" height="4"/>
+                <rect x="264" y="148" width="8" height="5"/>
+                <rect x="298" y="152" width="6" height="4"/>
+            </g>
+
+            <!-- Camada Inferior de Pedra -->
+            <rect x="0" y="162" width="320" height="18" fill="#7D7D7D"/>
+            <g fill="#686868">
+                <rect x="8" y="165" width="12" height="5"/>
+                <rect x="44" y="170" width="14" height="5"/>
+                <rect x="92" y="164" width="16" height="6"/>
+                <rect x="148" y="169" width="12" height="5"/>
+                <rect x="196" y="164" width="14" height="6"/>
+                <rect x="248" y="170" width="16" height="5"/>
+                <rect x="292" y="165" width="12" height="5"/>
+            </g>
+
+            <!-- Flores Pixel-Art no Gramado -->
+            <!-- Papoula (Vermelha) -->
+            <rect x="64" y="114" width="2" height="4" fill="#3B7A24"/>
+            <rect x="63" y="111" width="4" height="3" fill="#D92B2B"/>
+            <!-- Dente-de-leão (Amarela) -->
+            <rect x="98" y="134" width="2" height="4" fill="#3B7A24"/>
+            <rect x="97" y="131" width="4" height="3" fill="#F7D51D"/>
+            <rect x="234" y="134" width="2" height="4" fill="#3B7A24"/>
+            <rect x="233" y="131" width="4" height="3" fill="#F7D51D"/>
+        </svg>
+    </div>
+
+    <!-- Overlay de Vinheta Escura -->
+    <div class="mc-vignette" aria-hidden="true"></div>
+
+    <!-- 2. Janela Principal do Inventário Clássico do Minecraft (588px) -->
+    <main class="mc-window" aria-label="Inventário do Minecraft">
+        <!-- Seção Superior: 4 Slots de Armadura, Caixa Preta Vazia do Personagem e Slot de Escudo -->
+        <section class="mc-top-section">
+            <!-- Coluna Vertical de Armaduras -->
+            <div class="mc-armor-col">
+                <!-- Capacete -->
+                <div class="mc-slot" title="Capacete">
+                    <svg class="slot-silhouette" viewBox="0 0 16 16" fill="#4A4A4A" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 4h10v2h1v6h-2v-3H4v3H2V6h1V4zm2 2v1h6V6H5z"/>
+                    </svg>
+                </div>
+                <!-- Peitoral -->
+                <div class="mc-slot" title="Peitoral">
+                    <svg class="slot-silhouette" viewBox="0 0 16 16" fill="#4A4A4A" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2 3h4v2h4V3h4v4h-2v6H4V7H2V3z"/>
+                    </svg>
+                </div>
+                <!-- Calças -->
+                <div class="mc-slot" title="Calças">
+                    <svg class="slot-silhouette" viewBox="0 0 16 16" fill="#4A4A4A" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4 2h8v12H9V7H7v7H4V2z"/>
+                    </svg>
+                </div>
+                <!-- Botas -->
+                <div class="mc-slot" title="Botas">
+                    <svg class="slot-silhouette" viewBox="0 0 16 16" fill="#4A4A4A" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 5h3v5h1v3H2v-3h1V5zm7 0h3v5h1v3H9v-3h1V5z"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Espaço Vazio Rebaixado do Personagem (162x241px) -->
+            <div class="mc-player-box" aria-label="Espaço do Personagem"></div>
+
+            <!-- Slot de Escudo / Mão Secundária -->
+            <div class="mc-slot" title="Mão Secundária / Escudo">
+                <svg class="slot-silhouette" viewBox="0 0 16 16" fill="#4A4A4A" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 2h10v7c0 3-5 5-5 5s-5-2-5-5V2zm2 2v4c0 1.5 3 3 3 3s3-1.5 3-3V4H5z"/>
+                </svg>
+            </div>
+        </section>
+
+        <!-- Seção Principal do Inventário: Grade 3x9 (27 slots) -->
+        <section class="mc-main-section" aria-label="Inventário Principal">
+            <div class="mc-grid-9">
+                <!-- Linha 1 (9 slots) -->
+                <div class="mc-slot"></div>
+                <div class="mc-slot"></div>
+                <div class="mc-slot"></div>
+                <div class="mc-slot"></div>
+                <div class="mc-slot"></div>
+                <div class="mc-slot"></div>
+                <div class="mc-slot"></div>
+                <div class="mc-slot"></div>
+                <div class="mc-slot"></div>
+                <!-- Linha 2 (9 slots) -->
+                <div class="mc-slot"></div>
+                <div class="mc-slot"></div>
+                <div class="mc-slot"></div>
+                <div class="mc-slot"></div>
+                <div class="mc-slot"></div>
+                <div class="mc-slot"></div>
+                <div class="mc-slot"></div>
+                <div class="mc-slot"></div>
+                <div class="mc-slot"></div>
+                <!-- Linha 3 (9 slots) -->
+                <div class="mc-slot"></div>
+                <div class="mc-slot"></div>
+                <div class="mc-slot"></div>
+                <div class="mc-slot"></div>
+                <div class="mc-slot"></div>
+                <div class="mc-slot"></div>
+                <div class="mc-slot"></div>
+                <div class="mc-slot"></div>
+                <div class="mc-slot"></div>
+            </div>
+        </section>
+
+        <!-- Barra Rápida (Hotbar): Grade 1x9 (9 slots) -->
+        <section class="mc-hotbar-section" aria-label="Barra Rápida">
+            <div class="mc-grid-9">
+                <div class="mc-slot"></div>
+                <div class="mc-slot"></div>
+                <div class="mc-slot"></div>
+                <div class="mc-slot"></div>
+                <div class="mc-slot"></div>
+                <div class="mc-slot"></div>
+                <div class="mc-slot"></div>
+                <div class="mc-slot"></div>
+                <div class="mc-slot"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 3. Barra Lateral Estilo JEI (Just Enough Items) - Altura Inteira (100vh) -->
+    <aside class="jei-sidebar" aria-label="Lista de Itens JEI">
+        <!-- Cabeçalho com Setas de Navegação e Contador 1/1 -->
+        <div class="jei-header">
+            <button type="button" class="jei-square-btn" id="jeiPrevPageBtn" title="Página Anterior" aria-label="Página Anterior">
+                <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                    <polygon points="11,3 5,8 11,13" fill="#3F3F3F" transform="translate(1,1)"/>
+                    <polygon points="11,3 5,8 11,13" fill="#FFFFFF"/>
+                </svg>
+            </button>
+            <span class="jei-page-indicator" id="jeiPageIndicator">1/1</span>
+            <button type="button" class="jei-square-btn" id="jeiNextPageBtn" title="Próxima Página" aria-label="Próxima Página">
+                <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                    <polygon points="5,3 11,8 5,13" fill="#3F3F3F" transform="translate(1,1)"/>
+                    <polygon points="5,3 11,8 5,13" fill="#FFFFFF"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Grade Central Dinâmica 6 colunas x N linhas -->
+        <div class="jei-grid" id="jeiGrid"></div>
+
+        <!-- Rodapé com Busca e Botão Decorativo de Chave Inglesa (Wrench) -->
+        <div class="jei-footer">
+            <input
+                type="text"
+                class="jei-search"
+                id="jeiSearchInput"
+                placeholder=""
+                aria-label="Pesquisar itens"
+                autocomplete="off"
+            />
+            <button type="button" class="jei-square-btn" aria-label="Configurações JEI">
+                <!-- Ícone Pixel-Art de Chave Inglesa (Wrench) -->
+                <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 1h3v1h1v3h-1v1h-2v1H9v1H8v1H7v1H6v1H5v2H3v1H2v-1H1v-2h1v-1h2V9h1V8h1V7h1V6h1V4h1V2h1V1z" fill="#1E1E1E"/>
+                    <path d="M10 2h2v1h-1v2h2v1h-2v1H9v1H8v1H7v1H6v1H5v1H3v1H2v-1h1v-2h1V9h1V8h1V7h1V6h1V4h1V2z" fill="#A8A8A8"/>
+                    <path d="M10 2h1v1h-1V2zM8 5h1v1H8V5zM7 6h1v1H7V6zM6 7h1v1H6V7zM5 8h1v1H5V8zM4 9h1v1H4V9zM3 10h1v1H3v-1z" fill="#D8D8D8"/>
+                </svg>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Tooltip Flutuante Clássico Estilo Minecraft com Borda Roxa -->
+    <div class="mc-tooltip" id="mcTooltip"></div>
+
+    <script>
+        /**
+         * =====================================================================
+         * LISTA DE ITENS DO PAINEL LATERAL JEI (JUST ENOUGH ITEMS)
+         * =====================================================================
+         * Adicione seus itens diretamente neste array seguindo o modelo:
+         * { name: 'Nome do Bloco ou Item', img: 'caminho/da/imagem.png' }
+         *
+         * Exemplo:
+         * const jeiItems = [
+         *     { name: 'Pedra', img: 'assets/pedra.png' },
+         *     { name: 'Bloco de Grama', img: 'assets/grama.png' },
+         *     { name: 'Diamante', img: 'assets/diamante.png' }
+         * ];
+         */
+        const jeiItems = [
+            // Insira seus itens aqui: { name: '...', img: 'caminho/da/imagem.png' }
+        ];
+
+        // Constantes de layout do JEI
+        const TOTAL_PAGES = 1;
+        const JEI_COLS = 6;
+        const CELL_STEP = 40; // 38px célula + 2px gap
+
+        // Referências DOM
+        const jeiGrid = document.getElementById('jeiGrid');
+        const jeiPageIndicator = document.getElementById('jeiPageIndicator');
+        const jeiPrevPageBtn = document.getElementById('jeiPrevPageBtn');
+        const jeiNextPageBtn = document.getElementById('jeiNextPageBtn');
+        const jeiSearchInput = document.getElementById('jeiSearchInput');
+        const mcTooltip = document.getElementById('mcTooltip');
+
+        let currentPage = 1;
+        let searchQuery = '';
+
+        /**
+         * Calcula dinamicamente quantos slots (6 colunas x N linhas)
+         * cabem na altura atual da janela (100vh).
+         */
+        function getSlotsPerPage() {
+            const availableHeight = jeiGrid.clientHeight || (window.innerHeight - 104);
+            const rows = Math.max(4, Math.floor((availableHeight + 2) / CELL_STEP));
+            return JEI_COLS * rows;
+        }
+
+        /**
+         * Retorna a lista filtrada conforme o texto digitado na busca.
+         */
+        function getFilteredItems() {
+            const query = searchQuery.trim().toLowerCase();
+            if (!query) return jeiItems;
+            return jeiItems.filter(item =>
+                item && (item.name || '').toLowerCase().includes(query)
+            );
+        }
+
+        /**
+         * Renderiza a grade do JEI para a página atual.
+         */
+        function renderJeiGrid() {
+            jeiGrid.innerHTML = '';
+            const slotsPerPage = getSlotsPerPage();
+            const filtered = getFilteredItems();
+
+            // Mantém página única (1/1)
+            const totalPages = TOTAL_PAGES;
+
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+
+            jeiPageIndicator.textContent = `${currentPage}/${totalPages}`;
+
+            const startIndex = (currentPage - 1) * slotsPerPage;
+            for (let i = 0; i < slotsPerPage; i++) {
+                const item = filtered[startIndex + i];
+                const cell = createJeiCell(item);
+                jeiGrid.appendChild(cell);
+            }
+        }
+
+        /**
+         * Cria uma célula individual da grade JEI (com ou sem imagem).
+         */
+        function createJeiCell(item) {
+            const cell = document.createElement('div');
+            cell.className = 'jei-cell';
+
+            if (item && item.img) {
+                cell.classList.add('has-item');
+
+                const img = document.createElement('img');
+                img.src = item.img;
+                img.alt = item.name || 'Item';
+                img.onerror = function () {
+                    this.src = 'https://placehold.co/34x34/555555/FFFFFF?text=?';
+                };
+                cell.appendChild(img);
+
+                // Exibe tooltip clássico apenas ao passar o mouse sobre itens preenchidos
+                cell.addEventListener('mouseenter', (e) => {
+                    if (!item.name) return;
+                    mcTooltip.textContent = item.name;
+                    mcTooltip.style.display = 'block';
+                    moveTooltip(e);
+                });
+
+                cell.addEventListener('mousemove', moveTooltip);
+
+                cell.addEventListener('mouseleave', () => {
+                    mcTooltip.style.display = 'none';
+                });
+            }
+
+            return cell;
+        }
+
+        /**
+         * Posiciona o tooltip acompanhando o cursor do mouse sem sair da tela.
+         */
+        function moveTooltip(e) {
+            const offset = 14;
+            let left = e.clientX + offset;
+            let top = e.clientY + offset;
+
+            const rect = mcTooltip.getBoundingClientRect();
+            if (left + rect.width > window.innerWidth - 8) {
+                left = e.clientX - rect.width - offset;
+            }
+            if (top + rect.height > window.innerHeight - 8) {
+                top = e.clientY - rect.height - offset;
+            }
+
+            mcTooltip.style.left = `${left}px`;
+            mcTooltip.style.top = `${top}px`;
+        }
+
+        function getCurrentTotalPages() {
+            return TOTAL_PAGES;
+        }
+
+        // Navegação pelos botões ◀ e ▶ com rotação circular
+        jeiPrevPageBtn.addEventListener('click', () => {
+            const totalPages = getCurrentTotalPages();
+            currentPage = currentPage > 1 ? currentPage - 1 : totalPages;
+            renderJeiGrid();
+        });
+
+        jeiNextPageBtn.addEventListener('click', () => {
+            const totalPages = getCurrentTotalPages();
+            currentPage = currentPage < totalPages ? currentPage + 1 : 1;
+            renderJeiGrid();
+        });
+
+        // Navegação pela roda do mouse (scroll) sobre a grade JEI
+        jeiGrid.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            if (e.deltaY > 0) {
+                jeiNextPageBtn.click();
+            } else if (e.deltaY < 0) {
+                jeiPrevPageBtn.click();
+            }
+        }, { passive: false });
+
+        // Pesquisa em tempo real pelo nome do item
+        jeiSearchInput.addEventListener('input', (e) => {
+            searchQuery = e.target.value;
+            currentPage = 1;
+            mcTooltip.style.display = 'none';
+            renderJeiGrid();
+        });
+
+        // Recalcula automaticamente quantas linhas cabem ao redimensionar a janela
+        window.addEventListener('resize', renderJeiGrid);
+
+        // Renderização inicial do painel JEI
+        renderJeiGrid();
+
+        // Seleção interativa dos slots do inventário (clique e teclas 1 a 9 na barra rápida)
+        const inventorySlots = document.querySelectorAll('.mc-window .mc-slot');
+        const hotbarSlots = document.querySelectorAll('.mc-hotbar-section .mc-slot');
+
+        inventorySlots.forEach(slot => {
+            slot.addEventListener('click', () => {
+                inventorySlots.forEach(s => s.classList.remove('selected'));
+                slot.classList.add('selected');
+            });
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (document.activeElement === jeiSearchInput) {
+                return;
+            }
+            const num = parseInt(e.key, 10);
+            if (num >= 1 && num <= 9 && hotbarSlots[num - 1]) {
+                inventorySlots.forEach(s => s.classList.remove('selected'));
+                hotbarSlots[num - 1].classList.add('selected');
+            }
+        });
+    </script>
+
+</body>
+</html>
