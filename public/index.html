@@ -37,17 +37,19 @@
         }
 
         /* =========================================================
-           1. CENÁRIO DE FUNDO COM A IMAGEM EMBAÇADA
+           1. CENÁRIO DE FUNDO COM A IMAGEM (FotoFundo.jpeg) EMBAÇADA
            ========================================================= */
         .mc-scenery {
             position: fixed;
-            inset: -20px;
+            inset: -24px;
             z-index: 0;
-            filter: blur(5px);
-            transform: scale(1.03);
+            filter: blur(8px);
+            transform: scale(1.05);
             pointer-events: none;
             background-color: #1A1A1A;
-            background-image: url('kfl.jpeg');
+            background-image:
+                url('images/Fundo/FotoFundo.jpeg'),
+                url('https://raw.githubusercontent.com/vanillaflvs/CraftInventory/main/public/images/Fundo/FotoFundo.jpeg');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -114,6 +116,52 @@
             padding-top: 5px;
         }
 
+        /* Aba da Lixeira acoplada rente ao lado externo direito, alinhada à barra rápida */
+        .mc-trash-tab {
+            position: absolute;
+            left: 100%;
+            bottom: -4px;
+            background-color: var(--mc-bg);
+            border: 4px solid #000000;
+            box-shadow:
+                inset 4px 4px 0px var(--mc-border-light),
+                inset -4px -4px 0px var(--mc-border-dark),
+                8px 12px 24px rgba(0, 0, 0, 0.55);
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9;
+        }
+
+        .mc-trash-slot {
+            width: 58px;
+            height: 58px;
+            background-color: var(--mc-slot-bg);
+            border-top: 4px solid var(--mc-slot-shadow);
+            border-left: 4px solid var(--mc-slot-shadow);
+            border-right: 4px solid var(--mc-slot-highlight);
+            border-bottom: 4px solid var(--mc-slot-highlight);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .mc-trash-slot:hover,
+        .mc-trash-slot.drag-over {
+            background-color: #A85454;
+            outline: 3px solid #FF5555;
+            z-index: 6;
+        }
+
+        .mc-trash-slot svg {
+            width: 34px;
+            height: 34px;
+            pointer-events: none;
+        }
+
         .mc-grid-9 {
             display: grid;
             grid-template-columns: repeat(9, 1fr);
@@ -149,6 +197,29 @@
         .mc-slot.selected {
             outline: 3px solid #FFFFFF;
             z-index: 6;
+        }
+
+        .mc-slot.moving-source {
+            outline: 3px dashed #FFFF55;
+            z-index: 7;
+        }
+
+        .mc-slot.drag-over {
+            outline: 3px solid #55FF55;
+            z-index: 7;
+        }
+
+        /* Contador numérico clássico de pilha (1 a 64) no canto inferior direito do slot */
+        .slot-count {
+            position: absolute;
+            right: 4px;
+            bottom: 3px;
+            color: #FFFFFF;
+            font-size: 11px;
+            line-height: 1;
+            text-shadow: 2px 2px 0px #3F3F3F;
+            pointer-events: none;
+            z-index: 4;
         }
 
         /* Silhuetas dos slots vazios de armadura e escudo */
@@ -315,21 +386,137 @@
             white-space: nowrap;
         }
 
+        /* Modal Quadrado Estilo Minecraft para Escolher Quantidade (1 a 64) */
+        .mc-qty-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 120;
+            background-color: rgba(0, 0, 0, 0.65);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .mc-qty-overlay.active {
+            display: flex;
+        }
+
+        .mc-qty-box {
+            background-color: var(--mc-bg);
+            border: 4px solid #000000;
+            box-shadow:
+                inset 4px 4px 0px var(--mc-border-light),
+                inset -4px -4px 0px var(--mc-border-dark),
+                0 16px 40px rgba(0, 0, 0, 0.85);
+            padding: 18px;
+            width: 100%;
+            max-width: 310px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            text-align: center;
+        }
+
+        .mc-qty-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: #3F3F3F;
+            font-size: 11px;
+            line-height: 1.4;
+        }
+
+        .mc-qty-header img {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+        }
+
+        .mc-qty-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .mc-qty-input {
+            width: 92px;
+            height: 40px;
+            background-color: #000000;
+            border: 2px solid #A0A0A0;
+            outline: 2px solid #000000;
+            outline-offset: -4px;
+            color: #FFFFFF;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .mc-qty-presets {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+        }
+
+        .mc-btn {
+            height: 36px;
+            background-color: #8B8B8B;
+            border: 2px solid #000000;
+            box-shadow:
+                inset 2px 2px 0px #C6C6C6,
+                inset -2px -2px 0px #555555;
+            color: #FFFFFF;
+            font-size: 10px;
+            text-shadow: 2px 2px 0px #3F3F3F;
+            cursor: pointer;
+            padding: 0 8px;
+        }
+
+        .mc-btn:hover {
+            background-color: #9B9B9B;
+            box-shadow:
+                inset 2px 2px 0px #DCDCDC,
+                inset -2px -2px 0px #656565;
+        }
+
+        .mc-btn:active {
+            box-shadow:
+                inset 2px 2px 0px #555555,
+                inset -2px -2px 0px #C6C6C6;
+        }
+
+        .mc-qty-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
         /* =========================================================
            4. RESPONSIVIDADE PARA TELAS MENORES
            ========================================================= */
         @media (max-width: 1180px) {
             body {
-                padding-right: 268px;
+                padding-right: 340px;
             }
             .mc-window {
                 max-width: 484px;
                 padding: 16px;
             }
-            .mc-slot {
+            .mc-slot,
+            .mc-trash-slot {
                 width: 48px;
                 height: 48px;
                 border-width: 3px;
+            }
+            .mc-trash-tab {
+                padding: 10px;
+                border-width: 3px;
+                bottom: -3px;
+            }
+            .mc-trash-slot svg {
+                width: 28px;
+                height: 28px;
             }
             .slot-silhouette {
                 width: 32px;
@@ -348,6 +535,11 @@
                 padding: 12px;
                 overflow-y: auto;
             }
+            .mc-trash-tab {
+                position: static;
+                margin-top: 12px;
+                align-self: flex-end;
+            }
             .jei-sidebar {
                 position: relative;
                 right: auto;
@@ -364,10 +556,19 @@
                 padding: 10px;
                 max-width: 362px;
             }
-            .mc-slot {
+            .mc-slot,
+            .mc-trash-slot {
                 width: 36px;
                 height: 36px;
                 border-width: 2px;
+            }
+            .mc-trash-tab {
+                padding: 6px;
+                border-width: 2px;
+            }
+            .mc-trash-slot svg {
+                width: 22px;
+                height: 22px;
             }
             .slot-silhouette {
                 width: 24px;
@@ -482,6 +683,16 @@
                 <div class="mc-slot"></div>
             </div>
         </section>
+
+        <!-- Lixeira no canto inferior direito, alinhada perfeitamente fora da borda do inventário -->
+        <div class="mc-trash-tab">
+            <div class="mc-trash-slot" id="mcTrashSlot" title="Lixeira (Clique com item selecionado ou arraste para excluir)" aria-label="Lixeira">
+                <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5 2h6v1h3v2H2V3h3V2zm-1 4h8l-1 8H5L4 6zm2 1v6h1V7H6zm3 0v6h1V7H9z" fill="#3F3F3F"/>
+                    <path d="M5 1h6v1h3v2H2V2h3V1zm-1 4h8l-1 8H5L4 5zm2 1v6h1V6H6zm3 0v6h1V6H9z" fill="#D8D8D8"/>
+                </svg>
+            </div>
+        </div>
     </main>
 
     <!-- 3. Barra Lateral Estilo JEI (Just Enough Items) - Altura Inteira (100vh) -->
@@ -530,47 +741,86 @@
     <!-- Tooltip Flutuante Clássico Estilo Minecraft com Borda Roxa -->
     <div class="mc-tooltip" id="mcTooltip"></div>
 
-    <script>
+    <!-- Quadrado Estilo Minecraft para Escolha de Quantidade (Máx. 64) -->
+    <div class="mc-qty-overlay" id="mcQtyOverlay" role="dialog" aria-modal="true" aria-labelledby="mcQtyTitle">
+        <div class="mc-qty-box">
+            <div class="mc-qty-header">
+                <img id="mcQtyPreviewImg" src="" alt="" />
+                <span id="mcQtyTitle">Quantidade (1-64)</span>
+            </div>
+            <div class="mc-qty-controls">
+                <button type="button" class="jei-square-btn" id="mcQtyMinusBtn" aria-label="Diminuir quantidade">-1</button>
+                <input type="number" class="mc-qty-input" id="mcQtyInput" min="1" max="64" value="1" />
+                <button type="button" class="jei-square-btn" id="mcQtyPlusBtn" aria-label="Aumentar quantidade">+1</button>
+            </div>
+            <div class="mc-qty-presets">
+                <button type="button" class="mc-btn" data-preset="1">1</button>
+                <button type="button" class="mc-btn" data-preset="16">16</button>
+                <button type="button" class="mc-btn" data-preset="32">32</button>
+                <button type="button" class="mc-btn" data-preset="64">64</button>
+            </div>
+            <div class="mc-qty-actions">
+                <button type="button" class="mc-btn" id="mcQtyCancelBtn">Cancelar</button>
+                <button type="button" class="mc-btn" id="mcQtyConfirmBtn">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
         /**
          * =====================================================================
-         * LISTA DE ITENS DO PAINEL LATERAL JEI (JUST ENOUGH ITEMS)
+         * LISTA PADRÃO DE ITENS DO PAINEL LATERAL JEI (JUST ENOUGH ITEMS)
+         * Caminhos exatos da estrutura public/images/ do projeto CraftInventory
          * =====================================================================
          */
-        const jeiItems = [
-            { name: 'Arco', img: 'Arco_2.png' },
-            { name: 'Areia', img: 'Areia_2.png' },
-            { name: 'Bagas Doces', img: 'BagasDocess_2.png' },
-            { name: 'Balde de Água', img: 'BaldeAgua_2.png' },
-            { name: 'Batata', img: 'Batata_2.png' },
-            { name: 'Batata Assada', img: 'BatataAssada_2.png' },
-            { name: 'Baú', img: 'Bau_2.png' },
-            { name: 'Biscoito', img: 'Biscoito_2.png' },
-            { name: 'Bloco de Grama', img: 'BlocoGrama_2.png' },
-            { name: 'Carne de Boi', img: 'CarneBoi_2.png' },
-            { name: 'Carne de Porco', img: 'CarnePorco.png' },
-            { name: 'Cenoura', img: 'Cenoura.png' },
-            { name: 'Botas de Cota de Malha', img: 'CotaDeMalhaBota.png' },
-            { name: 'Calças de Cota de Malha', img: 'CotaDeMalhaCalca.png' },
-            { name: 'Capacete de Cota de Malha', img: 'CotaDeMalhaCapacete.png' },
-            { name: 'Peitoral de Cota de Malha', img: 'CotaDeMalhaPeitoral.png' },
-            { name: 'Enxada de Diamante', img: 'EnxadaDiamante.png' },
-            { name: 'Espada de Ouro', img: 'EspadaOuro.png' },
-            { name: 'Flecha', img: 'Flecha.png' },
-            { name: 'Fornalha', img: 'Fornalha.png' },
-            { name: 'Frango Assado', img: 'FrangoAssado.png' },
-            { name: 'Maçã', img: 'Maca.png' },
-            { name: 'Maçã Dourada', img: 'MacaDourada.png' },
-            { name: 'Machado de Ferro', img: 'MachadoFerro.png' },
-            { name: 'Madeira de Carvalho', img: 'MadeiraCarvalho.png' },
-            { name: 'Mesa de Trabalho', img: 'MesaDeTrabalho.png' },
-            { name: 'Pão', img: 'Pao.png' },
-            { name: 'Pá de Pedra', img: 'PaPedra.png' },
-            { name: 'Pedregulho', img: 'Pedregulho.png' },
-            { name: 'Pérola do Fim', img: 'PerolaDoFim.png' },
-            { name: 'Picareta de Netherita', img: 'PicaretaNetherita.png' },
-            { name: 'Rocha Matriz', img: 'RochaMatriz.png' },
-            { name: 'Vidro', img: 'Vidro.png' }
+        const CATALOG_VERSION = 'v2-subfolders';
+        const GITHUB_RAW_BASE = 'https://raw.githubusercontent.com/vanillaflvs/CraftInventory/main/public/';
+
+        const defaultJeiItems = [
+            // Ferramentas
+            { name: 'Arco', category: 'Ferramentas', img: 'images/Ferramentas/Arco.png' },
+            { name: 'Balde de Água', category: 'Ferramentas', img: 'images/Ferramentas/BaldeAgua.png' },
+            { name: 'Enxada de Diamante', category: 'Ferramentas', img: 'images/Ferramentas/EnxadaDiamante.png' },
+            { name: 'Espada de Ouro', category: 'Ferramentas', img: 'images/Ferramentas/EspadaOuro.png' },
+            { name: 'Flecha', category: 'Ferramentas', img: 'images/Ferramentas/Flecha.png' },
+            { name: 'Machado de Ferro', category: 'Ferramentas', img: 'images/Ferramentas/MachadoFerro.png' },
+            { name: 'Pá de Pedra', category: 'Ferramentas', img: 'images/Ferramentas/PaPedra.png' },
+            { name: 'Pérola do Fim', category: 'Ferramentas', img: 'images/Ferramentas/PerolaDoFim.png' },
+            { name: 'Picareta de Netherita', category: 'Ferramentas', img: 'images/Ferramentas/PicaretaNetherita.png' },
+            // Blocos
+            { name: 'Areia', category: 'Bloco', img: 'images/Bloco/Areia.png' },
+            { name: 'Baú', category: 'Bloco', img: 'images/Bloco/Bau.png' },
+            { name: 'Bloco de Grama', category: 'Bloco', img: 'images/Bloco/BlocoGrama.png' },
+            { name: 'Fornalha', category: 'Bloco', img: 'images/Bloco/Fornalha.png' },
+            { name: 'Madeira de Carvalho', category: 'Bloco', img: 'images/Bloco/MadeiraCarvalho.png' },
+            { name: 'Mesa de Trabalho', category: 'Bloco', img: 'images/Bloco/MesaDeTrabalho.png' },
+            { name: 'Pedregulho', category: 'Bloco', img: 'images/Bloco/Pedregulho.png' },
+            { name: 'Rocha Matriz', category: 'Bloco', img: 'images/Bloco/RochaMatriz.png' },
+            { name: 'Vidro', category: 'Bloco', img: 'images/Bloco/Vidro.png' },
+            // Comidas
+            { name: 'Bagas Doces', category: 'Comida', img: 'images/Comida/BagasDocess.png' },
+            { name: 'Batata', category: 'Comida', img: 'images/Comida/Batata.png' },
+            { name: 'Batata Assada', category: 'Comida', img: 'images/Comida/BatataAssada.png' },
+            { name: 'Biscoito', category: 'Comida', img: 'images/Comida/Biscoito.png' },
+            { name: 'Carne de Boi', category: 'Comida', img: 'images/Comida/CarneBoi.png' },
+            { name: 'Carne de Porco', category: 'Comida', img: 'images/Comida/CarnePorco.png' },
+            { name: 'Cenoura', category: 'Comida', img: 'images/Comida/Cenoura.png' },
+            { name: 'Frango Assado', category: 'Comida', img: 'images/Comida/FrangoAssado.png' },
+            { name: 'Maçã', category: 'Comida', img: 'images/Comida/Maca.png' },
+            { name: 'Maçã Dourada', category: 'Comida', img: 'images/Comida/MacaDourada.png' },
+            { name: 'Pão', category: 'Comida', img: 'images/Comida/Pao.png' },
+            // Armaduras
+            { name: 'Botas de Cota de Malha', category: 'Armadura', img: 'images/Armadura/CotaDeMalhaBota.png' },
+            { name: 'Calças de Cota de Malha', category: 'Armadura', img: 'images/Armadura/CotaDeMalhaCalca.png' },
+            { name: 'Capacete de Cota de Malha', category: 'Armadura', img: 'images/Armadura/CotaDeMalhaCapacete.png' },
+            { name: 'Peitoral de Cota de Malha', category: 'Armadura', img: 'images/Armadura/CotaDeMalhaPeitoral.png' }
         ];
+
+        let jeiItems = [...defaultJeiItems];
 
         // Constantes de layout do JEI
         const TOTAL_PAGES = 1;
@@ -585,8 +835,127 @@
         const jeiSearchInput = document.getElementById('jeiSearchInput');
         const mcTooltip = document.getElementById('mcTooltip');
 
+        // Referências do Quadrado de Quantidade
+        const mcQtyOverlay = document.getElementById('mcQtyOverlay');
+        const mcQtyPreviewImg = document.getElementById('mcQtyPreviewImg');
+        const mcQtyTitle = document.getElementById('mcQtyTitle');
+        const mcQtyInput = document.getElementById('mcQtyInput');
+        const mcQtyMinusBtn = document.getElementById('mcQtyMinusBtn');
+        const mcQtyPlusBtn = document.getElementById('mcQtyPlusBtn');
+        const mcQtyCancelBtn = document.getElementById('mcQtyCancelBtn');
+        const mcQtyConfirmBtn = document.getElementById('mcQtyConfirmBtn');
+        const mcQtyPresetBtns = document.querySelectorAll('[data-preset]');
+
         let currentPage = 1;
         let searchQuery = '';
+        let pendingItemForQty = null;
+        let pendingEditSlotIdx = null;
+        let movingFromSlotIdx = null;
+        let draggedSlotIdx = null;
+
+        // =====================================================================
+        // CONEXÃO COM O BANCO DE DADOS NA NUVEM (CATÁLOGO JEI + SLOTS DO INVENTÁRIO)
+        // =====================================================================
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'craft-inventory-default';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+
+        let db = null;
+        let auth = null;
+        let currentUser = null;
+        let inventorySlotsState = Array(41).fill(null);
+
+        function resolveImageUrl(imgPath) {
+            if (!imgPath) return '';
+            // Em ambiente local/Express usa o caminho relativo public/ (images/...);
+            // se estiver em preview externo ou falhar, o fallback carrega do GitHub raw.
+            return imgPath;
+        }
+
+        function attachImageWithFallback(imgElement, item) {
+            imgElement.src = resolveImageUrl(item.img);
+            imgElement.alt = item.name || 'Item';
+            imgElement.onerror = function () {
+                if (!this.dataset.retriedGithub && item.img && !/^https?:\/\//i.test(item.img)) {
+                    this.dataset.retriedGithub = 'true';
+                    this.src = `${GITHUB_RAW_BASE}${item.img}`;
+                    return;
+                }
+                this.onerror = null;
+                this.src = `https://placehold.co/34x34/555555/FFFFFF?text=${encodeURIComponent((item.name || '?').slice(0, 3))}`;
+            };
+        }
+
+        async function saveInventoryToCloud() {
+            if (!db || !currentUser) return;
+            try {
+                const invDocRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'inventory_state', 'main');
+                await setDoc(invDocRef, {
+                    slots: JSON.stringify(inventorySlotsState),
+                    updatedAt: Date.now()
+                }, { merge: true });
+            } catch (err) {
+                console.error('Erro ao salvar inventário no banco de dados:', err);
+            }
+        }
+
+        async function initCloudDatabase() {
+            if (!firebaseConfig) return;
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                // Autenticação obrigatória antes de qualquer leitura/escrita no banco
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    const cred = await signInWithCustomToken(auth, __initial_auth_token);
+                    currentUser = cred.user;
+                } else {
+                    const cred = await signInAnonymously(auth);
+                    currentUser = cred.user;
+                }
+
+                if (!currentUser) return;
+
+                // 1. Sincroniza o catálogo de itens do JEI salvo no banco de dados público
+                const catalogDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'jei_catalog', 'items');
+                onSnapshot(catalogDocRef, (snap) => {
+                    const data = snap.exists() ? snap.data() : null;
+                    if (data && data.version === CATALOG_VERSION && Array.isArray(data.items) && data.items.length > 0) {
+                        jeiItems = data.items;
+                        renderJeiGrid();
+                    } else {
+                        // Atualiza o banco de dados com os caminhos exatos das subpastas de public/images/
+                        setDoc(catalogDocRef, {
+                            version: CATALOG_VERSION,
+                            items: defaultJeiItems,
+                            updatedAt: Date.now()
+                        }).catch(() => {});
+                    }
+                }, (err) => {
+                    console.error('Erro ao sincronizar catálogo JEI:', err);
+                });
+
+                // 2. Sincroniza os slots do inventário do usuário no banco de dados privado
+                const invDocRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'inventory_state', 'main');
+                onSnapshot(invDocRef, (snap) => {
+                    if (snap.exists() && snap.data().slots) {
+                        try {
+                            const parsed = JSON.parse(snap.data().slots);
+                            if (Array.isArray(parsed)) {
+                                inventorySlotsState = parsed;
+                                renderInventorySlots();
+                            }
+                        } catch (e) {
+                            console.error('Erro ao ler slots salvos:', e);
+                        }
+                    }
+                }, (err) => {
+                    console.error('Erro ao sincronizar inventário:', err);
+                });
+            } catch (error) {
+                console.error('Falha ao conectar ao banco de dados:', error);
+            }
+        }
 
         /**
          * Calcula dinamicamente quantos slots (6 colunas x N linhas)
@@ -644,13 +1013,13 @@
                 cell.classList.add('has-item');
 
                 const img = document.createElement('img');
-                img.src = item.img;
-                img.alt = item.name || 'Item';
-                img.onerror = function () {
-                    this.onerror = null;
-                    this.src = `https://placehold.co/34x34/555555/FFFFFF?text=${encodeURIComponent((item.name || '?').slice(0, 3))}`;
-                };
+                attachImageWithFallback(img, item);
                 cell.appendChild(img);
+                // Clique em um item do JEI abre o quadrado para escolher a quantidade (1 a 64)
+                cell.addEventListener('click', () => {
+                    mcTooltip.style.display = 'none';
+                    openQuantityModal(item, null);
+                });
 
                 // Exibe tooltip clássico apenas ao passar o mouse sobre itens preenchidos
                 cell.addEventListener('mouseenter', (e) => {
@@ -731,27 +1100,349 @@
         // Renderização inicial do painel JEI
         renderJeiGrid();
 
-        // Seleção interativa dos slots do inventário (clique e teclas 1 a 9 na barra rápida)
+        // Seleção e persistência interativa dos slots do inventário
         const inventorySlots = document.querySelectorAll('.mc-window .mc-slot');
         const hotbarSlots = document.querySelectorAll('.mc-hotbar-section .mc-slot');
+        const mcTrashSlot = document.getElementById('mcTrashSlot');
 
-        inventorySlots.forEach(slot => {
-            slot.addEventListener('click', () => {
-                inventorySlots.forEach(s => s.classList.remove('selected'));
-                slot.classList.add('selected');
+        function clearMovingState() {
+            movingFromSlotIdx = null;
+            inventorySlots.forEach(s => s.classList.remove('moving-source'));
+        }
+
+        function moveOrSwapInventorySlots(fromIdx, toIdx) {
+            if (fromIdx === null || toIdx === null || fromIdx === toIdx) return;
+            const sourceItem = inventorySlotsState[fromIdx];
+            if (!sourceItem) return;
+
+            const targetItem = inventorySlotsState[toIdx];
+
+            // Se forem o mesmo item, empilha até 64
+            if (targetItem && targetItem.name === sourceItem.name && targetItem.img === sourceItem.img) {
+                const total = (Number(targetItem.count) || 1) + (Number(sourceItem.count) || 1);
+                if (total <= 64) {
+                    inventorySlotsState[toIdx] = { ...targetItem, count: total };
+                    inventorySlotsState[fromIdx] = null;
+                } else {
+                    inventorySlotsState[toIdx] = { ...targetItem, count: 64 };
+                    inventorySlotsState[fromIdx] = { ...sourceItem, count: total - 64 };
+                }
+            } else {
+                // Troca de posição ou move para slot vazio
+                inventorySlotsState[toIdx] = sourceItem;
+                inventorySlotsState[fromIdx] = targetItem || null;
+            }
+
+            renderInventorySlots();
+            saveInventoryToCloud();
+        }
+
+        function deleteItemAtSlot(slotIdx) {
+            if (slotIdx === null || slotIdx === undefined || !inventorySlotsState[slotIdx]) return;
+            inventorySlotsState[slotIdx] = null;
+            clearMovingState();
+            renderInventorySlots();
+            saveInventoryToCloud();
+        }
+
+        function renderInventorySlots() {
+            inventorySlots.forEach((slot, idx) => {
+                const existingImg = slot.querySelector('img.slot-item-img');
+                if (existingImg) existingImg.remove();
+
+                const existingCount = slot.querySelector('.slot-count');
+                if (existingCount) existingCount.remove();
+
+                const silhouette = slot.querySelector('.slot-silhouette');
+                const savedItem = inventorySlotsState[idx];
+
+                if (savedItem && savedItem.img) {
+                    slot.setAttribute('draggable', 'true');
+                    if (silhouette) silhouette.style.display = 'none';
+                    const img = document.createElement('img');
+                    img.className = 'slot-item-img';
+                    img.style.width = '40px';
+                    img.style.height = '40px';
+                    img.style.objectFit = 'contain';
+                    img.style.pointerEvents = 'none';
+                    attachImageWithFallback(img, savedItem);
+                    slot.appendChild(img);
+
+                    const qty = Math.min(64, Math.max(1, Number(savedItem.count) || 1));
+                    if (qty > 1) {
+                        const countBadge = document.createElement('span');
+                        countBadge.className = 'slot-count';
+                        countBadge.textContent = String(qty);
+                        slot.appendChild(countBadge);
+                    }
+                } else {
+                    slot.removeAttribute('draggable');
+                    if (silhouette) silhouette.style.display = '';
+                }
+            });
+        }
+
+        /**
+         * Retorna a ordem dos slots de baixo para cima:
+         * 1º: Barra Rápida (índices 32..40)
+         * 2º: Linha inferior do inventário (índices 23..31)
+         * 3º: Linha do meio do inventário (índices 14..22)
+         * 4º: Linha superior do inventário (índices 5..13)
+         */
+        function getBottomUpSlotOrder() {
+            const order = [];
+            for (let i = 32; i <= 40; i++) order.push(i);
+            for (let i = 23; i <= 31; i++) order.push(i);
+            for (let i = 14; i <= 22; i++) order.push(i);
+            for (let i = 5; i <= 13; i++) order.push(i);
+            return order;
+        }
+
+        function clampQuantity(val) {
+            const n = parseInt(val, 10);
+            if (isNaN(n) || n < 1) return 1;
+            if (n > 64) return 64;
+            return n;
+        }
+
+        function openQuantityModal(item, editSlotIdx = null) {
+            pendingItemForQty = item;
+            pendingEditSlotIdx = editSlotIdx;
+            mcQtyTitle.textContent = `${item.name} (Máx. 64)`;
+            attachImageWithFallback(mcQtyPreviewImg, item);
+            mcQtyInput.value = clampQuantity(item.count || 1);
+            mcQtyOverlay.classList.add('active');
+            mcQtyInput.focus();
+            mcQtyInput.select();
+        }
+
+        function closeQuantityModal() {
+            mcQtyOverlay.classList.remove('active');
+            pendingItemForQty = null;
+            pendingEditSlotIdx = null;
+        }
+
+        function equipItemToInventory(item, quantity = 1) {
+            const count = clampQuantity(quantity);
+
+            // Se estiver editando diretamente um slot já preenchido
+            if (pendingEditSlotIdx !== null && pendingEditSlotIdx >= 0) {
+                inventorySlotsState[pendingEditSlotIdx] = {
+                    name: item.name,
+                    img: item.img,
+                    count
+                };
+                renderInventorySlots();
+                saveInventoryToCloud();
+                return;
+            }
+
+            let targetIdx = -1;
+            inventorySlots.forEach((s, i) => {
+                if (s.classList.contains('selected')) targetIdx = i;
+            });
+
+            // Se não houver slot selecionado manualmente, preenche de baixo para cima
+            if (targetIdx === -1) {
+                const bottomUpOrder = getBottomUpSlotOrder();
+                for (const idx of bottomUpOrder) {
+                    if (!inventorySlotsState[idx]) {
+                        targetIdx = idx;
+                        break;
+                    }
+                }
+            }
+
+            if (targetIdx !== -1) {
+                inventorySlotsState[targetIdx] = {
+                    name: item.name,
+                    img: item.img,
+                    count
+                };
+                renderInventorySlots();
+                saveInventoryToCloud();
+            }
+        }
+
+        // Eventos do Quadrado de Escolha de Quantidade
+        mcQtyMinusBtn.addEventListener('click', () => {
+            mcQtyInput.value = clampQuantity((parseInt(mcQtyInput.value, 10) || 1) - 1);
+        });
+
+        mcQtyPlusBtn.addEventListener('click', () => {
+            mcQtyInput.value = clampQuantity((parseInt(mcQtyInput.value, 10) || 1) + 1);
+        });
+
+        mcQtyPresetBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                mcQtyInput.value = clampQuantity(btn.dataset.preset);
             });
         });
 
+        mcQtyInput.addEventListener('change', () => {
+            mcQtyInput.value = clampQuantity(mcQtyInput.value);
+        });
+
+        mcQtyInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                mcQtyConfirmBtn.click();
+            } else if (e.key === 'Escape') {
+                e.preventDefault();
+                closeQuantityModal();
+            }
+        });
+
+        mcQtyCancelBtn.addEventListener('click', closeQuantityModal);
+
+        mcQtyOverlay.addEventListener('click', (e) => {
+            if (e.target === mcQtyOverlay) closeQuantityModal();
+        });
+
+        mcQtyConfirmBtn.addEventListener('click', () => {
+            if (!pendingItemForQty) return;
+            const qty = clampQuantity(mcQtyInput.value);
+            equipItemToInventory(pendingItemForQty, qty);
+            closeQuantityModal();
+        });
+
+        inventorySlots.forEach((slot, idx) => {
+            slot.addEventListener('click', () => {
+                // Se há um item marcado para mover, move/troca para o slot clicado
+                if (movingFromSlotIdx !== null) {
+                    if (movingFromSlotIdx === idx) {
+                        clearMovingState();
+                        openQuantityModal(inventorySlotsState[idx], idx);
+                        return;
+                    }
+                    const from = movingFromSlotIdx;
+                    clearMovingState();
+                    moveOrSwapInventorySlots(from, idx);
+                    inventorySlots.forEach(s => s.classList.remove('selected'));
+                    slot.classList.add('selected');
+                    return;
+                }
+
+                inventorySlots.forEach(s => s.classList.remove('selected'));
+                slot.classList.add('selected');
+
+                // Ao clicar em um slot com item, seleciona-o para mover para outro slot ou lixeira
+                if (inventorySlotsState[idx]) {
+                    movingFromSlotIdx = idx;
+                    slot.classList.add('moving-source');
+                }
+            });
+
+            // Duplo clique abre o quadrado de quantidade (1 a 64)
+            slot.addEventListener('dblclick', () => {
+                if (inventorySlotsState[idx]) {
+                    clearMovingState();
+                    openQuantityModal(inventorySlotsState[idx], idx);
+                }
+            });
+
+            // Arrastar e soltar (Drag & Drop) entre slots do inventário
+            slot.addEventListener('dragstart', (e) => {
+                if (!inventorySlotsState[idx]) {
+                    e.preventDefault();
+                    return;
+                }
+                draggedSlotIdx = idx;
+                clearMovingState();
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', String(idx));
+            });
+
+            slot.addEventListener('dragover', (e) => {
+                if (draggedSlotIdx !== null) {
+                    e.preventDefault();
+                    slot.classList.add('drag-over');
+                }
+            });
+
+            slot.addEventListener('dragleave', () => {
+                slot.classList.remove('drag-over');
+            });
+
+            slot.addEventListener('drop', (e) => {
+                e.preventDefault();
+                slot.classList.remove('drag-over');
+                if (draggedSlotIdx !== null && draggedSlotIdx !== idx) {
+                    moveOrSwapInventorySlots(draggedSlotIdx, idx);
+                    inventorySlots.forEach(s => s.classList.remove('selected'));
+                    slot.classList.add('selected');
+                }
+                draggedSlotIdx = null;
+            });
+
+            slot.addEventListener('dragend', () => {
+                draggedSlotIdx = null;
+                inventorySlots.forEach(s => s.classList.remove('drag-over'));
+                mcTrashSlot.classList.remove('drag-over');
+            });
+
+            // Clique direito limpa o slot e atualiza no banco de dados
+            slot.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                deleteItemAtSlot(idx);
+            });
+        });
+
+        // Eventos da Lixeira (clique com item selecionado ou arrastar e soltar)
+        mcTrashSlot.addEventListener('click', () => {
+            if (movingFromSlotIdx !== null) {
+                deleteItemAtSlot(movingFromSlotIdx);
+                return;
+            }
+            let selectedIdx = -1;
+            inventorySlots.forEach((s, i) => {
+                if (s.classList.contains('selected')) selectedIdx = i;
+            });
+            if (selectedIdx !== -1 && inventorySlotsState[selectedIdx]) {
+                deleteItemAtSlot(selectedIdx);
+            }
+        });
+
+        mcTrashSlot.addEventListener('dragover', (e) => {
+            if (draggedSlotIdx !== null) {
+                e.preventDefault();
+                mcTrashSlot.classList.add('drag-over');
+            }
+        });
+
+        mcTrashSlot.addEventListener('dragleave', () => {
+            mcTrashSlot.classList.remove('drag-over');
+        });
+
+        mcTrashSlot.addEventListener('drop', (e) => {
+            e.preventDefault();
+            mcTrashSlot.classList.remove('drag-over');
+            if (draggedSlotIdx !== null) {
+                deleteItemAtSlot(draggedSlotIdx);
+                draggedSlotIdx = null;
+            }
+        });
+
         document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                clearMovingState();
+            }
+            if (mcQtyOverlay.classList.contains('active')) {
+                return;
+            }
             if (document.activeElement === jeiSearchInput) {
                 return;
             }
             const num = parseInt(e.key, 10);
             if (num >= 1 && num <= 9 && hotbarSlots[num - 1]) {
+                clearMovingState();
                 inventorySlots.forEach(s => s.classList.remove('selected'));
                 hotbarSlots[num - 1].classList.add('selected');
             }
         });
+
+        // Inicializa a sincronização com o banco de dados na nuvem
+        initCloudDatabase();
     </script>
 
 </body>
