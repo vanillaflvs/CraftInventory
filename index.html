@@ -638,18 +638,41 @@
          * =====================================================================
          * LISTA DE ITENS DO PAINEL LATERAL JEI (JUST ENOUGH ITEMS)
          * =====================================================================
-         * Adicione seus itens diretamente neste array seguindo o modelo:
-         * { name: 'Nome do Bloco ou Item', img: 'caminho/da/imagem.png' }
-         *
-         * Exemplo:
-         * const jeiItems = [
-         *     { name: 'Pedra', img: 'assets/pedra.png' },
-         *     { name: 'Bloco de Grama', img: 'assets/grama.png' },
-         *     { name: 'Diamante', img: 'assets/diamante.png' }
-         * ];
          */
         const jeiItems = [
-            // Insira seus itens aqui: { name: '...', img: 'caminho/da/imagem.png' }
+            { name: 'Arco', img: 'Arco_2.png' },
+            { name: 'Areia', img: 'Areia_2.png' },
+            { name: 'Bagas Doces', img: 'BagasDocess_2.png' },
+            { name: 'Balde de Água', img: 'BaldeAgua_2.png' },
+            { name: 'Batata', img: 'Batata_2.png' },
+            { name: 'Batata Assada', img: 'BatataAssada_2.png' },
+            { name: 'Baú', img: 'Bau_2.png' },
+            { name: 'Biscoito', img: 'Biscoito_2.png' },
+            { name: 'Bloco de Grama', img: 'BlocoGrama_2.png' },
+            { name: 'Carne de Boi', img: 'CarneBoi_2.png' },
+            { name: 'Carne de Porco', img: 'CarnePorco.png' },
+            { name: 'Cenoura', img: 'Cenoura.png' },
+            { name: 'Botas de Cota de Malha', img: 'CotaDeMalhaBota.png' },
+            { name: 'Calças de Cota de Malha', img: 'CotaDeMalhaCalca.png' },
+            { name: 'Capacete de Cota de Malha', img: 'CotaDeMalhaCapacete.png' },
+            { name: 'Peitoral de Cota de Malha', img: 'CotaDeMalhaPeitoral.png' },
+            { name: 'Enxada de Diamante', img: 'EnxadaDiamante.png' },
+            { name: 'Espada de Ouro', img: 'EspadaOuro.png' },
+            { name: 'Flecha', img: 'Flecha.png' },
+            { name: 'Fornalha', img: 'Fornalha.png' },
+            { name: 'Frango Assado', img: 'FrangoAssado.png' },
+            { name: 'Maçã', img: 'Maca.png' },
+            { name: 'Maçã Dourada', img: 'MacaDourada.png' },
+            { name: 'Machado de Ferro', img: 'MachadoFerro.png' },
+            { name: 'Madeira de Carvalho', img: 'MadeiraCarvalho.png' },
+            { name: 'Mesa de Trabalho', img: 'MesaDeTrabalho.png' },
+            { name: 'Pão', img: 'Pao.png' },
+            { name: 'Pá de Pedra', img: 'PaPedra.png' },
+            { name: 'Pedregulho', img: 'Pedregulho.png' },
+            { name: 'Pérola do Fim', img: 'PerolaDoFim.png' },
+            { name: 'Picareta de Netherita', img: 'PicaretaNetherita.png' },
+            { name: 'Rocha Matriz', img: 'RochaMatriz.png' },
+            { name: 'Vidro', img: 'Vidro.png' }
         ];
 
         // Constantes de layout do JEI
@@ -727,7 +750,8 @@
                 img.src = item.img;
                 img.alt = item.name || 'Item';
                 img.onerror = function () {
-                    this.src = 'https://placehold.co/34x34/555555/FFFFFF?text=?';
+                    this.onerror = null;
+                    this.src = `https://placehold.co/34x34/555555/FFFFFF?text=${encodeURIComponent((item.name || '?').slice(0, 3))}`;
                 };
                 cell.appendChild(img);
 
