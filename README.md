@@ -6,6 +6,17 @@ CraftInventory is an academic web development project inspired by Minecraft, des
 ## Install
 
 ```
+To install the project's dependencies, make sure you have Node.js and npm installed on your computer.
+
+Clone this repository:
+git clone <https://github.com/vanillaflvs/CraftInventory>
+Navigate to the project folder:
+cd CraftInventory
+Install the required dependencies:
+npm install
+Start the application:
+npm start
+Note: The npm install command automatically reads the package.json file and installs the project's dependencies, including Express, EJS, MySQL2, and other required packages.
 ```
 
 ## Usage
