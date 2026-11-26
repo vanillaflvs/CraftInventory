@@ -9,7 +9,7 @@ Make sure you have **Node.js** and **npm** installed on your computer.
 **1. Clone the repository:**
 
 ```bash
-git clone <https://github.com/vanillaflvs/CraftInventory>
+git clone <[https://github.com/vanillaflvs/CraftInventory](https://github.com/vanillaflvs/CraftInventory.git)>
 ```
 
 **2. Navigate to the project folder:**
