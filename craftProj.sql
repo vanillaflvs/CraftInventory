@@ -1,5 +1,5 @@
 create database projMine;
-
+use projMine;
 create table categoria(
 	id_categoria int primary key auto_increment,
     tipo varchar(30)
@@ -18,15 +18,16 @@ create table jogador(
 	vida double,
     nivel int,
 	apelido varchar(50),
-	limite_inventario int  default 36,
+	limite_inventario int set default 36,
     imagem varchar(300)
 );
-create table itens_Jogador(
-		id_jogador int,
-		id_item  int,
-		quantidade
-		constraint id_jogador foreign key(id_jogador) references jogador(id_jogador),
-		constraint id_item foreign key(id_item) references itens(id_item)
+CREATE TABLE itens_Jogador (
+    id_jogador INT,
+    id_item INT,
+    quantidade INT,
+
+    CONSTRAINT fk_jogador FOREIGN KEY (id_jogador) REFERENCES jogador(id_jogador),
+    CONSTRAINT fk_item FOREIGN KEY (id_item)REFERENCES itens(id_item)
 );
 
 
@@ -38,8 +39,7 @@ INSERT INTO categoria (tipo) VALUES
 ('Armas'),
 ('Itens Diversos');
 
-insert into jogador values(10.0, 67, "Manoel Gomes", "");
-
+INSERT INTO jogador (vida, nivel, apelido, imagem) VALUES (10.0, 67, 'Manoel Gomes', 'semimagem');
 INSERT INTO itens
 (id_categoria,dano, item_Img, nome)
 VALUES

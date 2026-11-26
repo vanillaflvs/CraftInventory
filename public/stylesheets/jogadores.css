@@ -1,0 +1,131 @@
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f1f1f1;
+    color: #333;
+}
+
+header {
+    background-color: #263238;
+    color: white;
+    padding: 25px;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 30px auto;
+}
+
+.formulario,
+.listagem {
+    background-color: white;
+    padding: 25px;
+    margin-bottom: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px #00000015;
+}
+
+h2 {
+    margin-top: 0;
+}
+
+.formulario form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button,
+.cancelar,
+.editar {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    color: white;
+}
+
+button[type="submit"] {
+    background-color: #2e7d32;
+    margin-top: 10px;
+}
+
+.cancelar {
+    background-color: #757575;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+}
+
+th {
+    background-color: #263238;
+    color: white;
+}
+
+.imagem-jogador {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+}
+
+.acoes {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.acoes form {
+    margin: 0;
+}
+
+.editar {
+    background-color: #1976d2;
+}
+
+.excluir {
+    background-color: #c62828;
+    margin: 0;
+}
+
+@media (max-width: 800px) {
+    .container {
+        width: 95%;
+    }
+
+    .listagem {
+        overflow-x: auto;
+    }
+
+    table {
+        min-width: 750px;
+    }
+}
