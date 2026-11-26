@@ -89,7 +89,6 @@ router.post('/editar/:id', async (req, res) => {
             vida,
             nivel,
             apelido,
-            limite_inventario,
             imagem
         } = req.body;
 
