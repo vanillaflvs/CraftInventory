@@ -37,24 +37,20 @@
         }
 
         /* =========================================================
-           1. CENÁRIO DE FUNDO VOXEL DO MINECRAFT EMBAÇADO
+           1. CENÁRIO DE FUNDO COM A IMAGEM EMBAÇADA
            ========================================================= */
         .mc-scenery {
             position: fixed;
-            inset: -24px;
+            inset: -20px;
             z-index: 0;
-            filter: blur(6px);
-            transform: scale(1.04);
+            filter: blur(5px);
+            transform: scale(1.03);
             pointer-events: none;
-            background: linear-gradient(180deg, #6EA8FF 0%, #99C5FF 55%, #C4E0FF 100%);
-        }
-
-        .mc-scenery svg {
-            width: 100%;
-            height: 100%;
-            display: block;
-            image-rendering: pixelated;
-            image-rendering: crisp-edges;
+            background-color: #1A1A1A;
+            background-image: url('kfl.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         /* Vinheta escura sutil sobre o fundo (como ao abrir o inventário no jogo) */
@@ -387,107 +383,8 @@
 </head>
 <body>
 
-    <!-- 1. Cenário Voxel do Minecraft ao Fundo -->
-    <div class="mc-scenery" aria-hidden="true">
-        <svg viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-            <!-- Céu -->
-            <rect width="320" height="180" fill="#78A7FF"/>
-            <rect y="70" width="320" height="110" fill="#9BC2FF"/>
-
-            <!-- Sol Quadrado Clássico -->
-            <rect x="242" y="18" width="24" height="24" fill="#FFF8B8"/>
-            <rect x="245" y="21" width="18" height="18" fill="#FFFFFF"/>
-
-            <!-- Nuvens em Blocos -->
-            <g fill="#FFFFFF" opacity="0.92">
-                <rect x="20" y="22" width="56" height="8"/>
-                <rect x="28" y="16" width="32" height="6"/>
-                <rect x="115" y="32" width="72" height="8"/>
-                <rect x="128" y="26" width="40" height="6"/>
-                <rect x="210" y="50" width="48" height="6"/>
-            </g>
-            <g fill="#DCE8FF" opacity="0.85">
-                <rect x="20" y="30" width="56" height="3"/>
-                <rect x="115" y="40" width="72" height="3"/>
-            </g>
-
-            <!-- Montanhas Distantes (Silhueta em blocos) -->
-            <polygon points="0,120 0,88 16,88 16,80 32,80 32,72 56,72 56,80 72,80 72,92 96,92 96,100 120,100 120,84 144,84 144,76 168,76 168,88 192,88 192,98 224,98 224,82 252,82 252,70 280,70 280,84 304,84 304,92 320,92 320,120" fill="#6D8EC7"/>
-
-            <!-- Colinas Médias com Grama -->
-            <polygon points="0,130 0,104 24,104 24,96 64,96 64,104 104,104 104,112 152,112 152,102 196,102 196,94 240,94 240,104 288,104 288,98 320,98 320,130" fill="#5D9B3B"/>
-            <polygon points="0,130 0,108 24,108 24,100 64,100 64,108 104,108 104,116 152,116 152,106 196,106 196,98 240,98 240,108 288,108 288,102 320,102 320,130" fill="#79553A"/>
-
-            <!-- Árvores de Carvalho (Tronco + Folhas Voxel) -->
-            <!-- Árvore Esquerda -->
-            <rect x="38" y="80" width="6" height="16" fill="#664C32"/>
-            <rect x="40" y="80" width="2" height="16" fill="#4E3822"/>
-            <rect x="28" y="66" width="26" height="14" fill="#3B7A24"/>
-            <rect x="32" y="60" width="18" height="6" fill="#49932D"/>
-            <rect x="30" y="70" width="8" height="6" fill="#2D611B"/>
-
-            <!-- Árvore Centro-Direita -->
-            <rect x="214" y="78" width="6" height="16" fill="#664C32"/>
-            <rect x="204" y="64" width="26" height="14" fill="#3B7A24"/>
-            <rect x="208" y="58" width="18" height="6" fill="#49932D"/>
-            <rect x="218" y="68" width="8" height="6" fill="#2D611B"/>
-
-            <!-- Árvore Direita -->
-            <rect x="272" y="82" width="6" height="16" fill="#664C32"/>
-            <rect x="262" y="68" width="26" height="14" fill="#3B7A24"/>
-            <rect x="266" y="62" width="18" height="6" fill="#49932D"/>
-
-            <!-- Lago de Água Voxel à Direita -->
-            <rect x="168" y="124" width="152" height="18" fill="#2F6CE5"/>
-            <rect x="176" y="124" width="44" height="3" fill="#5B94FF"/>
-            <rect x="240" y="127" width="56" height="3" fill="#5B94FF"/>
-            <!-- Areia na margem -->
-            <rect x="156" y="122" width="16" height="6" fill="#DBD3A0"/>
-            <rect x="164" y="128" width="12" height="6" fill="#C7BE8B"/>
-
-            <!-- Terreno em Primeiro Plano (Blocos de Grama, Terra e Pedra) -->
-            <rect x="0" y="118" width="156" height="8" fill="#5B9E35"/>
-            <rect x="0" y="118" width="156" height="3" fill="#72B844"/>
-            <rect x="0" y="138" width="320" height="8" fill="#5B9E35"/>
-            <rect x="0" y="138" width="320" height="3" fill="#72B844"/>
-
-            <!-- Camada de Terra -->
-            <rect x="0" y="126" width="164" height="12" fill="#866043"/>
-            <rect x="0" y="146" width="320" height="16" fill="#866043"/>
-            <g fill="#6E4D34">
-                <rect x="12" y="149" width="6" height="4"/>
-                <rect x="38" y="153" width="8" height="4"/>
-                <rect x="74" y="148" width="6" height="5"/>
-                <rect x="118" y="152" width="7" height="4"/>
-                <rect x="166" y="149" width="8" height="4"/>
-                <rect x="212" y="154" width="6" height="4"/>
-                <rect x="264" y="148" width="8" height="5"/>
-                <rect x="298" y="152" width="6" height="4"/>
-            </g>
-
-            <!-- Camada Inferior de Pedra -->
-            <rect x="0" y="162" width="320" height="18" fill="#7D7D7D"/>
-            <g fill="#686868">
-                <rect x="8" y="165" width="12" height="5"/>
-                <rect x="44" y="170" width="14" height="5"/>
-                <rect x="92" y="164" width="16" height="6"/>
-                <rect x="148" y="169" width="12" height="5"/>
-                <rect x="196" y="164" width="14" height="6"/>
-                <rect x="248" y="170" width="16" height="5"/>
-                <rect x="292" y="165" width="12" height="5"/>
-            </g>
-
-            <!-- Flores Pixel-Art no Gramado -->
-            <!-- Papoula (Vermelha) -->
-            <rect x="64" y="114" width="2" height="4" fill="#3B7A24"/>
-            <rect x="63" y="111" width="4" height="3" fill="#D92B2B"/>
-            <!-- Dente-de-leão (Amarela) -->
-            <rect x="98" y="134" width="2" height="4" fill="#3B7A24"/>
-            <rect x="97" y="131" width="4" height="3" fill="#F7D51D"/>
-            <rect x="234" y="134" width="2" height="4" fill="#3B7A24"/>
-            <rect x="233" y="131" width="4" height="3" fill="#F7D51D"/>
-        </svg>
-    </div>
+    <!-- 1. Cenário de Fundo com a Foto (kfl.jpeg) -->
+    <div class="mc-scenery" aria-hidden="true"></div>
 
     <!-- Overlay de Vinheta Escura -->
     <div class="mc-vignette" aria-hidden="true"></div>
