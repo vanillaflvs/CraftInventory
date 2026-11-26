@@ -1,84 +1,92 @@
-create database projMine;
+CREATE DATABASE IF NOT EXISTS craftProj;
+USE craftProj;
 
-create table categoria(
-	id_categoria int primary key auto_increment,
-    tipo varchar(30)
+CREATE TABLE IF NOT EXISTS categoria (
+    id_categoria INT AUTO_INCREMENT PRIMARY KEY,
+    tipo VARCHAR(30) NOT NULL UNIQUE
 );
 
-create table if not exists itens(
-	id_item int primary key auto_increment,
-    id_categoria int,
-    dano double,
-	item_Img varchar(300),
-    nome varchar(50),
-    constraint id_categoria foreign key(id_categoria) references categoria(id_categoria)
-);
-create table jogador(
-	id_jogador int primary key auto_increment,
-	vida double,
-    nivel int,
-	apelido varchar(50),
-	limite_inventario int  default 36,
-    imagem varchar(300)
-);
-create table itens_Jogador(
-		id_jogador int,
-		id_item  int,
-		quantidade
-		constraint id_jogador foreign key(id_jogador) references jogador(id_jogador),
-		constraint id_item foreign key(id_item) references itens(id_item)
+CREATE TABLE IF NOT EXISTS jogador (
+    id_jogador INT AUTO_INCREMENT PRIMARY KEY,
+    apelido VARCHAR(50) NOT NULL UNIQUE,
+    senha_hash VARCHAR(255) NOT NULL,
+    vida DOUBLE DEFAULT 20 NOT NULL,
+    nivel INT DEFAULT 0 NOT NULL,
+    limite_inventario INT DEFAULT 36 NOT NULL,
+    imagem VARCHAR(300),
+    CHECK (vida BETWEEN 0 AND 20),
+    CHECK (nivel >= 0),
+    CHECK (limite_inventario = 36)
 );
 
+CREATE TABLE IF NOT EXISTS itens (
+    id_item INT AUTO_INCREMENT PRIMARY KEY,
+    id_categoria INT NOT NULL,
+    nome VARCHAR(50) NOT NULL UNIQUE,
+    dano DOUBLE DEFAULT 0,
+    item_Img VARCHAR(300) NOT NULL,
+    limite_pilha INT DEFAULT 64 NOT NULL,
+    FOREIGN KEY (id_categoria) REFERENCES categoria(id_categoria),
+    CHECK (limite_pilha BETWEEN 1 AND 64)
+);
 
-INSERT INTO categoria (tipo) VALUES
-('Blocos'),
-('Equipamentos'),
-('Alimentos'),
-('Ferramentas'),
-('Armas'),
-('Itens Diversos');
+CREATE TABLE IF NOT EXISTS itens_Jogador (
+    id_jogador INT NOT NULL,
+    id_item INT NOT NULL,
+    slot INT NOT NULL,
+    quantidade INT NOT NULL DEFAULT 1,
+    PRIMARY KEY (id_jogador, slot),
+    FOREIGN KEY (id_jogador) REFERENCES jogador(id_jogador) ON DELETE CASCADE,
+    FOREIGN KEY (id_item) REFERENCES itens(id_item),
+    CHECK (slot BETWEEN 0 AND 35),
+    CHECK (quantidade BETWEEN 1 AND 64)
+);
 
-insert into jogador values(10.0, 67, "Manoel Gomes", "");
+INSERT IGNORE INTO categoria (id_categoria, tipo) VALUES
+(1, 'Blocos'),
+(2, 'Armaduras'),
+(3, 'Alimentos'),
+(4, 'Ferramentas'),
+(5, 'Armas'),
+(6, 'Diversos');
 
-INSERT INTO itens
-(id_categoria,dano, item_Img, nome)
-VALUES
+INSERT IGNORE INTO itens 
+(id_categoria, nome, dano, item_Img, limite_pilha) VALUES
+(1, 'Areia', 0, '/images/Bloco/Areia.png', 64),
+(1, 'Baú', 0, '/images/Bloco/Bau.png', 64),
+(1, 'Bloco de Grama', 0, '/images/Bloco/BlocoGrama.png', 64),
+(1, 'Fornalha', 0, '/images/Bloco/Fornalha.png', 64),
+(1, 'Madeira de Carvalho', 0, '/images/Bloco/MadeiraCarvalho.png', 64),
+(1, 'Mesa de Trabalho', 0, '/images/Bloco/MesaDeTrabalho.png', 64),
+(1, 'Pedregulho', 0, '/images/Bloco/Pedregulho.png', 64),
+(1, 'Rocha Matriz', 0, '/images/Bloco/RochaMatriz.png', 64),
+(1, 'Vidro', 0, '/images/Bloco/Vidro.png', 64),
 
-(1,0, 'cotademalha.png', 'Armadura de Cota de Malha'),
-(1,0, 'areia.png', 'Bloco de Areia'),
-(1,0, 'bau.png', 'Bau'),
-(1,0, 'grama.png', 'Bloco de Grama'),
-(1,0, 'fornalha.png', 'Fornalha'),
-(1,0, 'madeiradecarvalho.png', 'Madeira de Carvalho'),
-(1,0, 'mesadetrabalho.png', 'Mesa de Trabalho'),
-(1,0, 'pedregulho.png', 'Pedregulho'),
-(1,0, 'rochamatriz.png', 'Rocha Matriz'),
-(1,0, 'vidro.png', 'Vidro'),
+(2, 'Capacete de Cota de Malha', 0, '/images/Armadura/CotaDeMalhaCapacete.png', 1),
+(2, 'Peitoral de Cota de Malha', 0, '/images/Armadura/CotaDeMalhaPeitoral.png', 1),
+(2, 'Calça de Cota de Malha', 0, '/images/Armadura/CotaDeMalhaCalca.png', 1),
+(2, 'Botas de Cota de Malha', 0, '/images/Armadura/CotaDeMalhaBota.png', 1),
 
--- ALIMENTOS (id_categoria = 3)
-(3,0, 'bagasdoces.png', 'Bagas Doces'),
-(3,0, 'batata.png', 'Batata'),
-(3,0, 'batataassada.png', 'Batata Assada'),
-(3,0, 'biscoito.png', 'Biscoito'),
-(3,0, 'carnedeovelha.png', 'Carne de Ovelha'),
-(3,0, 'carnedeporco.png', 'Carne de Porco'),
-(3,0, 'cenoura.png', 'Cenoura'),
-(3,0, 'frangoassado.png', 'Frango Assado'),
-(3,0, 'maca.png', 'Maçã'),
-(3,0, 'macadourada.png', 'Maçã Dourada'),
-(3,0, 'pao.png', 'Pão'),
+(3, 'Bagas Doces', 0, '/images/Comida/BagasDocess.png', 64),
+(3, 'Batata', 0, '/images/Comida/Batata.png', 64),
+(3, 'Batata Assada', 0, '/images/Comida/BatataAssada.png', 64),
+(3, 'Biscoito', 0, '/images/Comida/Biscoito.png', 64),
+(3, 'Carne de Boi', 0, '/images/Comida/CarneBoi.png', 64),
+(3, 'Carne de Porco', 0, '/images/Comida/CarnePorco.png', 64),
+(3, 'Cenoura', 0, '/images/Comida/Cenoura.png', 64),
+(3, 'Frango Assado', 0, '/images/Comida/FrangoAssado.png', 64),
+(3, 'Maçã', 0, '/images/Comida/Maca.png', 64),
+(3, 'Maçã Dourada', 0, '/images/Comida/MacaDourada.png', 64),
+(3, 'Pão', 0, '/images/Comida/Pao.png', 64),
 
--- ARMAS (id_categoria = 5)
-(5, 1, 'arco.png', 'Arco'),
-(5,1, 'flecha.png', 'Flecha'),
-(5,5, 'espadaouro.png', 'Espada de Ouro'),
+(4, 'Enxada de Diamante', 1, '/images/Ferramentas/EnxadaDiamante.png', 1),
+(4, 'Machado de Ferro', 9, '/images/Ferramentas/MachadoFerro.png', 1),
+(4, 'Pá de Pedra', 3.5, '/images/Ferramentas/PaPedra.png', 1),
+(4, 'Picareta de Netherita', 6, '/images/Ferramentas/PicaretaNetherita.png', 1),
 
--- FERRAMENTAS (id_categoria = 4)
-(4,0, 'enxadadiamante.png', 'Enxada de Diamante'),
-(4,0, 'machadoferro.png', 'Machado de Ferro'),
-(4,0, 'picaretanetherita.png', 'Picareta de Netherita'),
+(5, 'Arco', 1, '/images/Ferramentas/Arco.png', 1),
+(5, 'Espada de Ouro', 4, '/images/Ferramentas/EspadaOuro.png', 1),
+(5, 'Flecha', 1, '/images/Ferramentas/Flecha.png', 64),
 
--- ITENS DIVERSOS (id_categoria = 6)
-(6, 0, 'baldeagua.png', 'Balde de Água'),
-(6, 0, 'pedra.png', 'Pá de Pedra'),
-(6, 0, 'peroladofim.png', 'Pérola do Fim');
+(6, 'Balde de Água', 0, '/images/Ferramentas/BaldeAgua.png', 1),
+(6, 'Pérola do Fim', 0, '/images/Ferramentas/PerolaDoFim.png', 16);

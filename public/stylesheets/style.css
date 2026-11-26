@@ -1,1716 +1,712 @@
-
-@import url('https://fonts.cdnfonts.com/css/minecraft-4');
-
-/* ========================================
-   CONFIGURAÇÕES GERAIS
-======================================== */
-
 :root {
-
-    --gui: #555555;
-    --slot: #414141;
-
-    --border-dark: #292929;
-    --border-light: #777777;
-
-    --text: #c6c6c6;
-
-    --slot-size: 48px;
-
-    --font: 'Minecraft', 'Courier New', monospace;
-
+  --mc-bg: #C6C6C6;
+  --mc-border-light: #FFFFFF;
+  --mc-border-dark: #555555;
+  --mc-slot-bg: #8B8B8B;
+  --mc-slot-shadow: #373737;
+  --mc-slot-highlight: #FFFFFF;
+  --slot-size: 58px;
 }
 
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
+  font-family: 'Press Start 2P', monospace;
+  image-rendering: pixelated;
 }
 
 [hidden] {
-    display: none !important;
-}
-
-html {
-    min-height: 100%;
+  display: none !important;
 }
 
 body {
-
-    margin: 0;
-    min-height: 100vh;
-
-    background: #201c15;
-    color: var(--text);
-
-    font-family: var(--font);
-
-}
-
-button,
-input {
-
-    font-family: inherit;
-    font-size: inherit;
-
+  background: #1A1A1A;
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  padding: 12px;
 }
 
 button {
-    cursor: pointer;
-}
-
-img,
-svg {
-
-    image-rendering: pixelated;
-
-    user-select: none;
-    -webkit-user-drag: none;
-
+  cursor: pointer;
 }
 
 button,
-input,
-dialog {
-
-    border-radius: 0;
-
+input {
+  font-family: inherit;
 }
 
-/* ========================================
-   FUNDO
-======================================== */
-
-.world-background {
-
-    position: fixed;
-    inset: 0;
-
-    z-index: -1;
-
-    background-color: #282219;
-
-    background-image:
-
-        linear-gradient(
-            rgba(0, 0, 0, .25),
-            rgba(0, 0, 0, .65)
-        ),
-
-        repeating-conic-gradient(
-            #30291f 0% 25%,
-            #282219 0% 50%
-        );
-
-    background-size: auto, 96px 96px;
-
+.mc-scenery {
+  position: fixed;
+  inset: -24px;
+  z-index: -2;
+  background-color: #1A1A1A;
+  background-image: url('/images/Fundo/FotoFundo.jpeg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: blur(8px);
+  transform: scale(1.05);
+  pointer-events: none;
 }
 
-/* ========================================
-   LOGIN
-======================================== */
+.mc-vignette {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(circle at center,
+      rgba(0, 0, 0, 0.35),
+      rgba(0, 0, 0, 0.65));
+}
 
 .login-screen {
-
-    min-height: 100vh;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    position: relative;
-
-    padding: 24px;
-
-    background-color: #392b1d;
-
-    background-image:
-
-        linear-gradient(
-            rgba(0, 0, 0, .35),
-            rgba(0, 0, 0, .65)
-        ),
-
-        repeating-conic-gradient(
-            #493522 0% 25%,
-            #3b2c1e 0% 50%
-        );
-
-    background-size: auto, 48px 48px;
-
+  width: 100%;
+  min-height: calc(100vh - 24px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
 }
 
 .login-content {
-
-    width: 100%;
-    max-width: 900px;
-
-    text-align: center;
-
+  width: min(650px, 100%);
+  text-align: center;
 }
 
 .minecraft-title {
-
-    font-size: clamp(24px, 6vw, 78px);
-
-    font-weight: 900;
-    letter-spacing: -2px;
-
-    color: #bdbdbd;
-
-    line-height: 1.3;
-
-    -webkit-text-stroke: 1px #252525;
-
-    text-shadow:
-
-        0 2px #888,
-        0 4px #666,
-        0 6px #444,
-        0 8px #333,
-        0 10px #111,
-        3px 12px #111;
-
+  font-size: clamp(20px, 4vw, 38px);
+  color: #D0D0D0;
+  text-shadow:
+    3px 3px #555,
+    6px 6px #111;
+  letter-spacing: -1px;
+  line-height: 1.5;
+  margin-bottom: 15px;
 }
 
 .splash {
-
-    color: #ffff00;
-
-    font-size: clamp(12px, 2vw, 22px);
-
-    text-shadow: 2px 2px #555500;
-
-    transform: rotate(-8deg);
-
-    margin-top: 8px;
-    margin-bottom: 70px;
-
-    animation: splash 1s infinite alternate;
-
-}
-
-@keyframes splash {
-
-    from {
-        transform: rotate(-8deg) scale(1);
-    }
-
-    to {
-        transform: rotate(-8deg) scale(1.06);
-    }
-
+  color: #FFFF55;
+  font-size: 11px;
+  text-shadow: 2px 2px #555500;
+  margin-bottom: 40px;
+  transform: rotate(-5deg);
 }
 
 .login-form {
-
-    width: min(400px, 100%);
-
-    display: flex;
-    flex-direction: column;
-
-    gap: 12px;
-
-    margin: auto;
-
-    text-align: left;
-
+  width: min(400px, 100%);
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
 .login-form label {
+  text-align: left;
+  font-size: 10px;
+  line-height: 1.6;
+}
 
-    color: #ddd;
+.login-form input {
+  width: 100%;
+  height: 44px;
+  background: #000;
+  border: 2px solid #A0A0A0;
+  color: white;
+  padding: 10px;
+  font-size: 11px;
+  outline: none;
+}
 
-    text-shadow: 2px 2px #222;
-
+.login-form input:focus {
+  border-color: #FFF;
 }
 
 .login-footer {
-
-    position: absolute;
-
-    bottom: 12px;
-    left: 12px;
-    right: 12px;
-
-    display: flex;
-    justify-content: space-between;
-
-    gap: 12px;
-
-    font-size: 12px;
-
-    color: #aaa;
-
+  position: fixed;
+  bottom: 15px;
+  left: 15px;
+  font-size: 10px;
+  color: #CCC;
 }
 
-/* ========================================
-   INPUTS
-======================================== */
-
-input {
-
-    width: 100%;
-
-    min-width: 0;
-
-    padding: 10px;
-
-    color: #eee;
-    background: #080808;
-
-    border: 2px solid #888;
-
-    outline: none;
-
-    box-shadow: 0 0 0 2px #111;
-
+.mc-button {
+  min-height: 38px;
+  background: #8B8B8B;
+  border: 2px solid #000;
+  box-shadow:
+    inset 2px 2px #C6C6C6,
+    inset -2px -2px #555;
+  color: #FFF;
+  font-size: 10px;
+  text-shadow: 2px 2px #3F3F3F;
+  padding: 8px 12px;
+  line-height: 1.5;
 }
 
-input:focus {
-
-    border-color: #ddd;
-
-}
-
-input::placeholder {
-
-    color: #777;
-
-}
-
-/* ========================================
-   BOTÕES MINECRAFT
-======================================== */
-
-.mc-button,
-.quantity-buttons button {
-
-    min-height: 36px;
-
-    padding: 9px 16px;
-
-    color: #ddd;
-
-    background-color: #666;
-
-    background-image:
-
-        repeating-conic-gradient(
-            #ffffff05 0% 25%,
-            #00000008 0% 50%
-        );
-
-    background-size: 8px 8px;
-
-    border: 2px solid #151515;
-
-    box-shadow:
-
-        inset 2px 2px #929292,
-        inset -2px -2px #353535;
-
-    text-shadow: 2px 2px #333;
-
-}
-
-.mc-button:hover,
-.quantity-buttons button:hover {
-
-    background-color: #777;
-
-    color: #ffffa0;
-
-    outline: 1px solid #ddd;
-    outline-offset: -3px;
-
+.mc-button:hover {
+  background: #9B9B9B;
+  box-shadow:
+    inset 2px 2px #DCDCDC,
+    inset -2px -2px #656565;
 }
 
 .mc-button:active {
-
-    box-shadow:
-
-        inset 2px 2px #333,
-        inset -2px -2px #888;
-
+  box-shadow:
+    inset 2px 2px #555,
+    inset -2px -2px #C6C6C6;
 }
 
-button:focus-visible {
-
-    outline: 2px solid #ddd;
-    outline-offset: -3px;
-
+.login-form .mc-button {
+  min-height: 44px;
 }
 
-/* ========================================
-   TELA PRINCIPAL
-======================================== */
+#loginStatus,
+#perfilStatus {
+  color: #FF7777;
+  font-size: 10px;
+  line-height: 1.7;
+  text-align: center;
+}
 
 #game {
-
-    min-height: 100vh;
-
-    padding: 20px 30px;
-
+  width: 100%;
 }
 
 .game-header {
-
-    width: 100%;
-    max-width: 1150px;
-
-    margin: 0 auto 20px;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: space-between;
-
-    gap: 12px;
-
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 #player {
-
-    font-size: 15px;
-
-    color: #ccc;
-
-    text-shadow: 2px 2px #111;
-
+  color: #FFF;
+  font-size: 11px;
+  text-shadow: 2px 2px #333;
 }
 
-.game-header .mc-button {
-
-    font-size: 13px;
-
+.header-buttons {
+  display: flex;
+  gap: 6px;
 }
 
-/* ========================================
-   DISTRIBUIÇÃO PRINCIPAL
-======================================== */
+.header-buttons .mc-button {
+  font-size: 9px;
+}
 
 .game-layout {
-
-    display: grid;
-
-    grid-template-columns:
-
-        calc(var(--slot-size) * 9 + 24px)
-        350px;
-
-    align-items: center;
-    justify-content: center;
-
-    gap: 45px;
-
-    min-height: calc(100vh - 110px);
-
-    margin: auto;
-
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 85px 264px 12px 12px;
+  min-height: calc(100vh - 24px);
 }
 
 .player-area {
-
-    width: 100%;
-
-    min-width: 0;
-
+  width: 100%;
+  max-width: 588px;
 }
 
-/* ========================================
-   PAINEL DO INVENTÁRIO
-======================================== */
-
-.inventory {
-
-    width: 100%;
-
-    padding: 10px;
-
-    background: var(--gui);
-
-    border: 2px solid #151515;
-
-    box-shadow:
-
-        inset 2px 2px #858585,
-        inset -2px -2px #353535,
-        0 0 0 1px #101010;
-
-    color: #b5b5b5;
-
+.mc-window {
+  background: var(--mc-bg);
+  border: 4px solid #000;
+  box-shadow:
+    inset 4px 4px var(--mc-border-light),
+    inset -4px -4px var(--mc-border-dark),
+    0 20px 48px rgba(0, 0, 0, 0.78);
+  padding: 20px;
+  position: relative;
+  width: 100%;
+  max-width: 588px;
 }
 
-.inventory-top {
-
-    display: grid;
-
-    grid-template-columns:
-
-        var(--slot-size)
-        calc(var(--slot-size) * 2.7)
-        minmax(0, 1fr);
-
-    align-items: start;
-
-    gap: 4px;
-
-    margin-bottom: 8px;
-
+.mc-top-section {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin-bottom: 20px;
 }
 
-/* ========================================
-   SLOTS
-======================================== */
+.mc-armor-col {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.mc-player-box {
+  width: 162px;
+  height: 241px;
+  background: #000;
+  border-top: 4px solid var(--mc-slot-shadow);
+  border-left: 4px solid var(--mc-slot-shadow);
+  border-right: 4px solid var(--mc-slot-highlight);
+  border-bottom: 4px solid var(--mc-slot-highlight);
+}
+
+.mc-main-section {
+  margin-bottom: 15px;
+}
+
+.mc-hotbar-section {
+  padding-top: 5px;
+}
+
+.mc-grid-9 {
+  display: grid;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  gap: 3px;
+}
 
 .slot {
-
-    position: relative;
-
-    width: var(--slot-size);
-    height: var(--slot-size);
-
-    min-width: 0;
-
-    display: flex;
-
-    justify-content: center;
-    align-items: center;
-
-    padding: 4px;
-
-    background: var(--slot);
-
-    border: 0;
-
-    box-shadow:
-
-        inset 2px 2px var(--border-dark),
-        inset -2px -2px var(--border-light);
-
+  width: var(--slot-size);
+  height: var(--slot-size);
+  background: var(--mc-slot-bg);
+  border-top: 4px solid var(--mc-slot-shadow);
+  border-left: 4px solid var(--mc-slot-shadow);
+  border-right: 4px solid var(--mc-slot-highlight);
+  border-bottom: 4px solid var(--mc-slot-highlight);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: 0;
 }
 
-button.slot:hover {
+.mc-grid-9 .slot {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+}
 
-    background-color: #777;
-
+.slot:hover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.35);
+  pointer-events: none;
+  z-index: 5;
 }
 
 .slot img {
-
-    display: block;
-
-    width: 100%;
-    height: 100%;
-
-    object-fit: contain;
-
-    pointer-events: none;
-
-    image-rendering: pixelated;
-
+  width: 82%;
+  height: 82%;
+  object-fit: contain;
+  pointer-events: none;
 }
 
-.slot .amount {
-
-    position: absolute;
-
-    right: 3px;
-    bottom: 2px;
-
-    font-size: clamp(12px, 1.6vw, 18px);
-
-    line-height: 1;
-
-    color: #eee;
-
-    text-shadow:
-
-        2px 2px #222;
-
-    pointer-events: none;
-
+.amount {
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  color: #FFF;
+  font-size: 11px;
+  text-shadow: 2px 2px #3F3F3F;
+  pointer-events: none;
+  z-index: 6;
 }
 
-.inventory-grid {
-
-    display: grid;
-
-    grid-template-columns:
-
-        repeat(9, var(--slot-size));
-
-    gap: 0;
-
+.slot-silhouette {
+  width: 38px;
+  height: 38px;
+  opacity: 0.45;
+  pointer-events: none;
 }
 
-.hotbar {
-
-    margin-top: 8px;
-
+.mc-armor-col img {
+  opacity: 0.45;
+  filter: grayscale(1);
 }
 
-/* ========================================
-   ARMADURAS
-======================================== */
-
-.armor {
-
-    display: grid;
-
-    grid-template-columns: var(--slot-size);
-
-    gap: 0;
-
+.jei-sidebar {
+  position: fixed;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  height: 100vh;
+  width: 252px;
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: transparent;
+  padding: 8px 8px 8px 6px;
 }
 
-.armor .slot {
-
-    padding: 7px;
-
+.jei-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 36px;
+  flex-shrink: 0;
 }
 
-.armor .slot img {
-
-    opacity: .55;
-
+.jei-page-indicator {
+  color: #FFF;
+  font-size: 13px;
+  text-shadow: 2px 2px #3F3F3F;
 }
 
-/* ========================================
-   PERSONAGEM
-======================================== */
-
-.character {
-
-    position: relative;
-
-    width: 100%;
-
-    height: calc(var(--slot-size) * 4);
-
-    background: #080808;
-
-    overflow: hidden;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    box-shadow:
-
-        inset 2px 2px #292929,
-        inset -2px -2px #777;
-
+.jei-grid {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(6, 38px);
+  grid-auto-rows: 38px;
+  gap: 2px;
+  justify-content: space-between;
+  align-content: start;
+  overflow-y: auto;
+  scrollbar-width: none;
+  margin: 8px 0;
 }
 
-.character-shadow {
-
-    position: absolute;
-
-    width: 65%;
-    height: 12px;
-
-    bottom: 12px;
-
-    background: #161616;
-
-    transform: skew(-20deg);
-
-}
-
-.steve {
-
-    position: relative;
-
-    width: 90px;
-    height: 158px;
-
-    transform: scale(.95);
-
-    image-rendering: pixelated;
-
-}
-
-/* Cabeça */
-
-.steve-head {
-
-    position: absolute;
-
-    top: 0;
-    left: 25px;
-
-    width: 40px;
-    height: 40px;
-
-    background-color: #aa7956;
-
-    background-image:
-
-        repeating-conic-gradient(
-            #ffffff08 0% 25%,
-            #00000010 0% 50%
-        );
-
-    background-size: 10px 10px;
-
-    box-shadow: inset -5px 0 #86583d;
-
-    z-index: 3;
-
-}
-
-.steve-head::before {
-
-    content: '';
-
-    position: absolute;
-
-    top: -8px;
-    left: 4px;
-
-    width: 40px;
-    height: 8px;
-
-    background: #503422;
-
-    transform: skewX(-45deg);
-
-}
-
-.steve-head::after {
-
-    content: '';
-
-    position: absolute;
-
-    top: -4px;
-    right: -8px;
-
-    width: 8px;
-    height: 40px;
-
-    background: #785138;
-
-    transform: skewY(-45deg);
-
-}
-
-.steve-hair {
-
-    width: 100%;
-    height: 10px;
-
-    background: #4c3021;
-
-    box-shadow: inset -5px 0 #342216;
-
-}
-
-.steve-eyes {
-
-    position: absolute;
-
-    top: 17px;
-
-    left: 5px;
-    right: 5px;
-
-    display: flex;
-
-    justify-content: space-between;
-
-}
-
-.steve-eyes i {
-
-    width: 10px;
-    height: 5px;
-
-    background: #ddd;
-
-    box-shadow: inset -5px 0 #484a88;
-
-}
-
-.steve-eyes i:last-child {
-
-    box-shadow: inset 5px 0 #484a88;
-
-}
-
-.steve-nose {
-
-    position: absolute;
-
-    width: 10px;
-    height: 5px;
-
-    top: 23px;
-    left: 15px;
-
-    background: #865b40;
-
-}
-
-.steve-mouth {
-
-    position: absolute;
-
-    top: 29px;
-    left: 10px;
-
-    width: 20px;
-    height: 5px;
-
-    background: #65412e;
-
-}
-
-/* Tronco */
-
-.steve-body {
-
-    position: absolute;
-
-    top: 40px;
-    left: 25px;
-
-    width: 40px;
-    height: 56px;
-
-    background: #238d90;
-
-    background-image:
-
-        repeating-conic-gradient(
-            #ffffff09 0% 25%,
-            #0000000d 0% 50%
-        );
-
-    background-size: 10px 10px;
-
-    box-shadow:
-
-        inset -5px 0 #1a6a70,
-        inset 0 -5px #1d7b7d;
-
-    z-index: 2;
-
-}
-
-/* Braços */
-
-.steve-arm {
-
-    position: absolute;
-
-    top: 40px;
-
-    width: 20px;
-    height: 58px;
-
-    background:
-
-        linear-gradient(
-            #238d90 0 35%,
-            #aa7956 35% 100%
-        );
-
-    box-shadow: inset -4px 0 #0003;
-
-}
-
-.steve-arm.left {
-
-    left: 5px;
-
-    transform: rotate(5deg);
-    transform-origin: top right;
-
-}
-
-.steve-arm.right {
-
-    right: 5px;
-
-    transform: rotate(-5deg);
-    transform-origin: top left;
-
-}
-
-/* Pernas */
-
-.steve-leg {
-
-    position: absolute;
-
-    top: 96px;
-
-    width: 20px;
-    height: 58px;
-
-    background:
-
-        linear-gradient(
-            #45477e 0 85%,
-            #454545 85% 100%
-        );
-
-    box-shadow: inset -4px 0 #0003;
-
-}
-
-.steve-leg.left {
-
-    left: 25px;
-
-}
-
-.steve-leg.right {
-
-    left: 45px;
-
-}
-
-/* ========================================
-   CRAFTING
-======================================== */
-
-.crafting {
-
-    min-width: 0;
-
-    padding: 0 0 0 8px;
-
-}
-
-.crafting-title {
-
-    display: block;
-
-    margin-bottom: 5px;
-
-    color: #b5b5b5;
-
-    font-size: 14px;
-
-}
-
-.crafting-area {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 5px;
-
-}
-
-.crafting-grid {
-
-    display: grid;
-
-    grid-template-columns:
-
-        repeat(2, var(--slot-size));
-
-}
-
-.arrow {
-
-    position: relative;
-
-    width: 22px;
-    height: 12px;
-
-    flex-shrink: 0;
-
-    background: #373737;
-
-}
-
-.arrow::after {
-
-    content: '';
-
-    position: absolute;
-
-    right: -1px;
-    top: -7px;
-
-    width: 0;
-    height: 0;
-
-    border-top: 13px solid transparent;
-    border-bottom: 13px solid transparent;
-    border-left: 13px solid #373737;
-
-}
-
-.result {
-
-    flex-shrink: 0;
-
-}
-
-.crafting-bottom {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 12px;
-
-    margin-top: 12px;
-
-}
-
-.offhand svg {
-
-    width: 75%;
-    height: 75%;
-
-}
-
-.recipe-book {
-
-    width: 36px;
-    height: 36px;
-
-    padding: 3px;
-
-    background: #414141;
-
-    border: 2px solid #292929;
-
-    box-shadow:
-
-        inset 2px 2px #777,
-        inset -2px -2px #333;
-
-}
-
-.recipe-book svg {
-
-    width: 100%;
-    height: 100%;
-
-}
-
-/* ========================================
-   CATÁLOGO
-======================================== */
-
-.catalog {
-
-    width: 100%;
-
-    min-width: 0;
-
-    align-self: center;
-
-    display: flex;
-
-    flex-direction: column;
-
-}
-
-.catalog-header {
-
-    min-height: 34px;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    margin-bottom: 6px;
-
-}
-
-.catalog-title {
-
-    color: #ddd;
-
-    font-size: 14px;
-
-    text-shadow: 2px 2px #111;
-
-}
-
-.catalog-grid {
-
-    display: grid;
-
-    grid-template-columns:
-
-        repeat(7, minmax(0, 1fr));
-
-    align-content: start;
-
-    gap: 0;
-
-    min-height: 300px;
-    max-height: 65vh;
-
-    overflow-y: auto;
-
-    scrollbar-width: thin;
-    scrollbar-color: #555 #111;
-
+.jei-grid::-webkit-scrollbar {
+  display: none;
 }
 
 .catalog-item {
-
-    position: relative;
-
-    width: 100%;
-
-    aspect-ratio: 1;
-
-    min-width: 0;
-
-    padding: 6px;
-
-    background: transparent;
-
-    border: 1px solid transparent;
-
-    display: flex;
-
-    justify-content: center;
-    align-items: center;
-
-}
-
-.catalog-item img {
-
-    width: 100%;
-    height: 100%;
-
-    object-fit: contain;
-
-    image-rendering: pixelated;
-
-    pointer-events: none;
-
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  background: transparent;
+  border: none;
+  padding: 0;
 }
 
 .catalog-item:hover {
-
-    background: #ffffff20;
-
-    border-color: #888;
-
+  background: rgba(255, 255, 255, 0.35);
 }
 
-.catalog-footer {
-
-    display: flex;
-
-    align-items: stretch;
-
-    gap: 4px;
-
-    margin-top: 12px;
-
+.catalog-item img {
+  width: 34px;
+  height: 34px;
+  max-width: 92%;
+  max-height: 92%;
+  object-fit: contain;
+  pointer-events: none;
 }
 
-#search {
-
-    flex: 1;
-
-    min-width: 0;
-
-    width: 100%;
-
-    height: 38px;
-
-    padding: 6px 8px;
-
-    background: #080808;
-
-    border: 2px solid #888;
-
-    font-size: 13px;
-
+.jei-footer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 36px;
+  flex-shrink: 0;
 }
 
-.search-icon {
-
-    width: 38px;
-    height: 38px;
-
-    flex-shrink: 0;
-
-    background: #555;
-
-    border: 2px solid #111;
-
-    box-shadow:
-
-        inset 2px 2px #888,
-        inset -2px -2px #292929;
-
-    padding: 5px;
-
+.jei-search {
+  flex: 1;
+  min-width: 0;
+  height: 36px;
+  background: #000;
+  border: 2px solid #A0A0A0;
+  outline: 2px solid #000;
+  outline-offset: -4px;
+  color: #FFF;
+  font-size: 10px;
+  padding: 0 8px;
 }
 
-.search-icon svg {
-
-    width: 100%;
-    height: 100%;
-
+.jei-search:focus {
+  border-color: #FFF;
 }
 
-#status {
-
-    min-height: 28px;
-
-    margin: 10px 0 0;
-
-    font-size: 11px;
-
-    line-height: 1.5;
-
-    color: #aaa;
-
+.jei-square-btn {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  background: #8B8B8B;
+  border: 2px solid #000;
+  box-shadow:
+    inset 2px 2px #C6C6C6,
+    inset -2px -2px #555;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: #FFF;
+  font-size: 10px;
 }
 
-/* ========================================
-   HUD
-======================================== */
-
-.hud {
-
-    width: 100%;
-
-    margin-top: 12px;
-
-    opacity: .65;
-
+.jei-square-btn:hover {
+  background: #9B9B9B;
 }
 
-.hud-status {
-
-    display: flex;
-
-    align-items: center;
-    justify-content: space-between;
-
-    gap: 8px;
-
-    padding: 0 2px;
-
+.jei-square-btn:active {
+  box-shadow:
+    inset 2px 2px #555,
+    inset -2px -2px #C6C6C6;
 }
 
-.hearts {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 1px;
-
-    color: #a51e20;
-
-    font-size: clamp(10px, 1.4vw, 20px);
-
-    text-shadow:
-
-        1px 1px #220000,
-        -1px -1px #220000;
-
+.jei-square-btn svg {
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
 }
 
-.hunger {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 1px;
-
+.mc-tooltip {
+  position: fixed;
+  z-index: 100;
+  pointer-events: none;
+  background: rgba(16, 0, 16, 0.94);
+  border: 2px solid #28007F;
+  box-shadow: 0 0 0 2px #100010;
+  color: #FFF;
+  font-size: 10px;
+  line-height: 1.8;
+  padding: 8px;
+  text-shadow: 2px 2px #3F3F3F;
+  white-space: pre-line;
 }
 
-.hunger svg {
-
-    width: clamp(10px, 1.4vw, 19px);
-
-    height: auto;
-
+.mc-dialog,
+.profile-dialog {
+  background: var(--mc-bg);
+  border: 4px solid #000;
+  box-shadow:
+    inset 4px 4px var(--mc-border-light),
+    inset -4px -4px var(--mc-border-dark),
+    0 16px 40px rgba(0, 0, 0, 0.85);
+  color: #3F3F3F;
+  padding: 20px;
+  width: min(340px, 95vw);
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
-.experience {
-
-    position: relative;
-
-    margin: 10px 0 5px;
-
+.mc-dialog::backdrop,
+.profile-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.65);
 }
 
-.experience span {
-
-    position: absolute;
-
-    left: 50%;
-    bottom: 4px;
-
-    transform: translateX(-50%);
-
-    color: #80ff20;
-
-    font-size: 17px;
-
-    text-shadow: 2px 2px #173600;
-
+.mc-qty-box {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-align: center;
 }
 
-.experience-track {
-
-    height: 7px;
-
-    background: #111;
-
-    border: 1px solid #000;
-
-    box-shadow: inset 1px 1px #555;
-
+.mc-qty-box h2,
+.profile-dialog h2 {
+  font-size: 13px;
+  line-height: 1.7;
+  margin: 5px 0 12px;
+  text-align: center;
 }
 
-.experience-fill {
-
-    width: 65%;
-    height: 100%;
-
-    background: #609d20;
-
-    box-shadow: inset 0 1px #a1ca51;
-
-}
-
-.hud-hotbar {
-
-    display: grid;
-
-    grid-template-columns:
-
-        repeat(9, minmax(0, 1fr));
-
-    border: 2px solid #151515;
-
-    background: #202020;
-
-}
-
-.hud-hotbar .slot {
-
-    width: 100%;
-    height: auto;
-
-    aspect-ratio: 1;
-
-    background: #222;
-
-    box-shadow:
-
-        inset 2px 2px #111,
-        inset -2px -2px #555;
-
-}
-
-.hud-hotbar .slot:first-child {
-
-    outline: 2px solid #999;
-
-    outline-offset: -2px;
-
-}
-
-/* ========================================
-   MODAL
-======================================== */
-
-.mc-dialog {
-
-    width: min(340px, 92vw);
-
-    max-height: 90vh;
-
-    overflow-y: auto;
-
-    background: #555;
-
-    color: #ddd;
-
-    padding: 20px;
-
-    border: 2px solid #111;
-
-    box-shadow:
-
-        inset 2px 2px #888,
-        inset -2px -2px #292929,
-        0 0 0 1px #000;
-
-}
-
-.mc-dialog::backdrop {
-
-    background: #000b;
-
-}
-
-.mc-dialog form {
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 12px;
-
-}
-
-.mc-dialog h2 {
-
-    margin: 0 0 6px;
-
-    font-size: 18px;
-
-    font-weight: normal;
-
-    text-shadow: 2px 2px #333;
-
+.mc-qty-box label {
+  font-size: 10px;
 }
 
 .item-preview {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 12px;
-
-    min-height: 60px;
-
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 10px;
+  line-height: 1.6;
 }
 
 .item-preview img {
-
-    width: 56px;
-    height: 56px;
-
-    object-fit: contain;
-
-    padding: 6px;
-
-    background: #414141;
-
-    box-shadow:
-
-        inset 2px 2px #292929,
-        inset -2px -2px #777;
-
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
 }
 
-.item-preview span {
+.mc-qty-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
 
-    font-size: 14px;
-
+.mc-qty-input {
+  width: 92px;
+  height: 40px;
+  background: #000;
+  border: 2px solid #A0A0A0;
+  color: #FFF;
+  font-size: 14px;
+  text-align: center;
 }
 
 .quantity-buttons {
-
-    display: grid;
-
-    grid-template-columns: repeat(4, 1fr);
-
-    gap: 4px;
-
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
 }
 
-.quantity-buttons button {
+.quantity-buttons .mc-button {
+  padding: 6px;
+}
 
-    padding: 6px 0;
-
+.mc-qty-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
 }
 
 .danger {
-
-    color: #ffaaaa;
-
+  background: #994444;
 }
 
-/* ========================================
-   TOOLTIP ORIGINAL
-======================================== */
-
-#tooltip {
-
-    position: fixed;
-
-    z-index: 9999;
-
-    pointer-events: none;
-
-    max-width: calc(100vw - 16px);
-
-    padding: 6px 10px;
-
-    background: #100010f5;
-
-    border: 2px solid #28065b;
-
-    box-shadow:
-
-        0 0 0 2px #100010,
-        inset 0 0 0 1px #420b83;
-
-    color: #eee;
-
-    font-size: 13px;
-
-    line-height: 1.5;
-
-    white-space: pre-line;
-
-    text-shadow: 2px 2px #333;
-
+.danger:hover {
+  background: #B55555;
 }
 
-/* ========================================
-   RESPONSIVIDADE
-======================================== */
-
-@media (min-width: 1400px) {
-
-    :root {
-
-        --slot-size: 56px;
-
-    }
-
-    .game-layout {
-
-        grid-template-columns:
-
-            calc(var(--slot-size) * 9 + 24px)
-            400px;
-
-        gap: 60px;
-
-    }
-
-    .steve {
-
-        transform: scale(1.15);
-
-    }
-
+.profile-dialog {
+  width: min(440px, 95vw);
 }
 
-@media (max-width: 1000px) {
-
-    :root {
-
-        --slot-size: 40px;
-
-    }
-
-    .game-layout {
-
-        grid-template-columns:
-
-            calc(var(--slot-size) * 9 + 24px)
-            280px;
-
-        gap: 24px;
-
-    }
-
-    .steve {
-
-        transform: scale(.8);
-
-    }
-
-    .crafting {
-
-        padding-left: 3px;
-
-    }
-
-    .arrow {
-
-        width: 16px;
-
-    }
-
+.profile-dialog .login-form {
+  width: 100%;
 }
 
-@media (max-width: 740px) {
-
-    :root {
-
-        --slot-size: clamp(
-            20px,
-            calc((100vw - 52px) / 9),
-            48px
-        );
-
-    }
-
-    #game {
-
-        padding: 12px;
-
-    }
-
-    .game-layout {
-
-        grid-template-columns:
-
-            calc(var(--slot-size) * 9 + 24px);
-
-        align-items: start;
-
-        gap: 24px;
-
-        min-height: auto;
-
-    }
-
-    .game-header {
-
-        margin-bottom: 24px;
-
-    }
-
-    .catalog {
-
-        width: 100%;
-
-    }
-
-    .catalog-grid {
-
-        min-height: 0;
-
-        max-height: 340px;
-
-    }
-
-    .catalog-item {
-
-        padding: 5px;
-
-    }
-
-    .steve {
-
-        transform: scale(.7);
-
-    }
-
-    .crafting-title {
-
-        font-size: 12px;
-
-    }
-
-    .crafting-area {
-
-        gap: 3px;
-
-    }
-
-    .crafting {
-
-        padding-left: 0;
-
-    }
-
-    .arrow {
-
-        width: 12px;
-        height: 8px;
-
-    }
-
-    .arrow::after {
-
-        top: -4px;
-
-        border-top-width: 8px;
-        border-bottom-width: 8px;
-        border-left-width: 8px;
-
-    }
-
-    .recipe-book {
-
-        width: 26px;
-        height: 26px;
-
-    }
-
-    .crafting-bottom {
-
-        margin-top: 6px;
-
-    }
-
-    .game-header .mc-button {
-
-        padding: 8px;
-
-        font-size: 11px;
-
-    }
-
+.profile-dialog label {
+  color: #3F3F3F;
 }
 
-@media (max-width: 380px) {
-
-    .steve {
-
-        transform: scale(.5);
-
-    }
-
-    .inventory-top {
-
-        gap: 2px;
-
-    }
-
-    .crafting-title {
-
-        font-size: 10px;
-
-    }
-
-    .slot {
-
-        padding: 3px;
-
-    }
-
-    .armor .slot {
-
-        padding: 4px;
-
-    }
-
+.profile-dialog #perfilStatus {
+  color: #A00000;
 }
 
-@media (prefers-reduced-motion: reduce) {
+.hud {
+  margin-top: 16px;
+}
 
-    .splash {
+.hud-status {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+}
 
-        animation: none;
+.hearts {
+  display: flex;
+  gap: 4px;
+}
 
-    }
+.hearts span {
+  color: #D92B2B;
+  font-family: monospace;
+  font-size: 24px;
+  text-shadow:
+    2px 2px #000,
+    -1px -1px #000;
+}
 
+.experience {
+  color: #80FF20;
+  font-size: 14px;
+  text-shadow: 2px 2px #000;
+}
+
+#status {
+  color: #FFF;
+  font-size: 10px;
+  text-align: center;
+  line-height: 1.8;
+  min-height: 20px;
+  text-shadow: 2px 2px #000;
+}
+
+@media (max-width: 1180px) {
+  :root {
+    --slot-size: 48px;
+  }
+
+  .player-area {
+    max-width: 484px;
+  }
+
+  .mc-window {
+    padding: 16px;
+  }
+
+  .slot {
+    border-width: 3px;
+  }
+
+  .mc-player-box {
+    width: 132px;
+    height: 201px;
+    border-width: 3px;
+  }
+
+  .slot-silhouette {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+@media (max-width: 820px) {
+  .game-header {
+    position: relative;
+    top: auto;
+    left: auto;
+    align-items: center;
+    padding: 12px;
+  }
+
+  .game-layout {
+    flex-direction: column;
+    padding: 12px;
+    min-height: auto;
+  }
+
+  .jei-sidebar {
+    position: relative;
+    top: auto;
+    right: auto;
+    bottom: auto;
+    height: 400px;
+    margin-top: 16px;
+  }
+}
+
+@media (max-width: 520px) {
+  :root {
+    --slot-size: 36px;
+  }
+
+  .player-area {
+    max-width: 362px;
+  }
+
+  .mc-window {
+    padding: 10px;
+  }
+
+  .slot {
+    border-width: 2px;
+  }
+
+  .mc-player-box {
+    width: 100px;
+    height: 153px;
+    border-width: 2px;
+  }
+
+  .slot-silhouette {
+    width: 24px;
+    height: 24px;
+  }
+
+  .amount {
+    font-size: 8px;
+  }
+
+  .hearts span {
+    font-size: 18px;
+  }
 }

@@ -1,15 +1,13 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>CraftInventory</title>
 
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/stylesheets/style.css">
 
     <script defer src="/javascripts/inventory.js"></script>
@@ -17,53 +15,47 @@
 
 <body>
 
-    <div class="world-background"></div>
-
-    <!-- TELA DE LOGIN -->
+    <div class="mc-scenery"></div>
+    <div class="mc-vignette"></div>
 
     <section id="login" class="login-screen">
 
         <div class="login-content">
 
-            <div class="minecraft-title">
-                CRAFTINVENTORY
-            </div>
+            <h1 class="minecraft-title">CRAFTINVENTORY</h1>
 
-            <div class="splash">
-                Your inventory, your world!
-            </div>
+            <p class="splash">Your inventory, your world!</p>
 
             <form id="loginForm" class="login-form">
 
-                <label for="nickname">
-                    Nome do jogador
-                </label>
+                <label for="nickname">Nome do jogador</label>
 
-                <input
-                    type="text"
-                    id="nickname"
-                    placeholder="Steve"
-                    maxlength="50"
-                    autocomplete="username"
-                    required
-                >
+                <input type="text" id="nickname" placeholder="Steve" maxlength="50" autocomplete="username" required>
+
+                <label for="senha">Senha</label>
+
+                <input type="password" id="senha" placeholder="Senha" minlength="6" autocomplete="current-password"
+                    required>
 
                 <button type="submit" class="mc-button">
                     Entrar no mundo
                 </button>
+
+                <button type="button" id="cadastro" class="mc-button">
+                    Criar jogador
+                </button>
+
+                <p id="loginStatus" role="status"></p>
 
             </form>
 
         </div>
 
         <div class="login-footer">
-            <span>CraftInventory 1.0</span>
-            <span>Projeto acadêmico</span>
+            CraftInventory 1.0
         </div>
 
     </section>
-
-    <!-- TELA PRINCIPAL -->
 
     <main id="game" hidden>
 
@@ -71,164 +63,57 @@
 
             <span id="player"></span>
 
-            <button id="logout" class="mc-button">
-                Salvar e sair
-            </button>
+            <div class="header-buttons">
+
+                <button id="perfil" class="mc-button">
+                    Editar jogador
+                </button>
+
+                <button id="logout" class="mc-button">
+                    Salvar e sair
+                </button>
+
+            </div>
 
         </header>
 
         <div class="game-layout">
 
-            <!-- LADO ESQUERDO -->
-
             <div class="player-area">
 
-                <section class="inventory">
+                <section class="mc-window">
 
-                    <div class="inventory-top">
+                    <div class="mc-top-section">
 
-                        <!-- ARMADURA -->
+                        <div id="armor" class="mc-armor-col"></div>
 
-                        <div id="armor" class="armor"></div>
+                        <div class="mc-player-box"></div>
 
-                        <!-- PERSONAGEM -->
+                        <div class="slot offhand">
 
-                        <div class="character">
+                            <svg class="slot-silhouette" viewBox="0 0 16 16" fill="#4A4A4A">
 
-                            <div class="character-shadow"></div>
+                                <path d="M3 2h10v7c0 3-5 5-5 5s-5-2-5-5V2zm2 2v4c0 1.5 3 3 3 3s3-1.5 3-3V4H5z" />
 
-                            <div class="steve">
-
-                                <div class="steve-head">
-
-                                    <div class="steve-hair"></div>
-
-                                    <div class="steve-eyes">
-                                        <i></i>
-                                        <i></i>
-                                    </div>
-
-                                    <div class="steve-nose"></div>
-                                    <div class="steve-mouth"></div>
-
-                                </div>
-
-                                <div class="steve-body"></div>
-
-                                <div class="steve-arm left"></div>
-                                <div class="steve-arm right"></div>
-
-                                <div class="steve-leg left"></div>
-                                <div class="steve-leg right"></div>
-
-                            </div>
-
-                        </div>
-
-                        <!-- CRAFTING -->
-
-                        <div class="crafting">
-
-                            <span class="crafting-title">
-                                Crafting
-                            </span>
-
-                            <div class="crafting-area">
-
-                                <div class="crafting-grid">
-
-                                    <div class="slot"></div>
-                                    <div class="slot"></div>
-                                    <div class="slot"></div>
-                                    <div class="slot"></div>
-
-                                </div>
-
-                                <div class="arrow"></div>
-
-                                <div class="slot result"></div>
-
-                            </div>
-
-                            <div class="crafting-bottom">
-
-                                <div class="slot offhand">
-
-                                    <svg viewBox="0 0 16 16"
-                                         shape-rendering="crispEdges">
-
-                                        <path
-                                            fill="#303030"
-                                            d="M3 2H13V9L8 14L3 9Z"
-                                        />
-
-                                        <path
-                                            fill="#656565"
-                                            d="M5 4H11V8L8 11L5 8Z"
-                                        />
-
-                                    </svg>
-
-                                </div>
-
-                                <!-- Livro de receitas decorativo -->
-
-                                <div class="recipe-book"
-                                     title="Livro de receitas">
-
-                                    <svg viewBox="0 0 16 16"
-                                         shape-rendering="crispEdges">
-
-                                        <path
-                                            fill="#242424"
-                                            d="M1 4L11 1L15 5V12L5 15L1 11Z"
-                                        />
-
-                                        <path
-                                            fill="#376735"
-                                            d="M2 4L11 2L14 5L5 9Z"
-                                        />
-
-                                        <path
-                                            fill="#7EAD55"
-                                            d="M3 4L10 3L12 5L5 7Z"
-                                        />
-
-                                        <path
-                                            fill="#B8B8A1"
-                                            d="M5 9L14 6V10L5 13Z"
-                                        />
-
-                                        <path
-                                            fill="#565656"
-                                            d="M2 6L5 9V13L2 10Z"
-                                        />
-
-                                    </svg>
-
-                                </div>
-
-                            </div>
+                            </svg>
 
                         </div>
 
                     </div>
 
-                    <!-- INVENTÁRIO PRINCIPAL -->
+                    <div class="mc-main-section">
 
-                    <div id="slots"
-                         class="inventory-grid">
+                        <div id="slots" class="mc-grid-9"></div>
+
                     </div>
 
-                    <!-- HOTBAR -->
+                    <div class="mc-hotbar-section">
 
-                    <div id="hotbar"
-                         class="inventory-grid hotbar">
+                        <div id="hotbar" class="mc-grid-9"></div>
+
                     </div>
 
                 </section>
-
-                <!-- HUD DO MINECRAFT -->
 
                 <div class="hud">
 
@@ -236,125 +121,76 @@
 
                         <div class="hearts">
 
-                            <span>♥</span>
-                            <span>♥</span>
-                            <span>♥</span>
-                            <span>♥</span>
-                            <span>♥</span>
-                            <span>♥</span>
-                            <span>♥</span>
-                            <span>♥</span>
-                            <span>♥</span>
-                            <span>♥</span>
+                            <% for (let i=0; i < 10; i++) { %>
+                                <span>♥</span>
+                                <% } %>
 
                         </div>
 
-                        <div class="hunger">
+                        <div class="experience">
 
-                            <% for (let i = 0; i < 10; i++) { %>
-
-                                <svg viewBox="0 0 16 16"
-                                     shape-rendering="crispEdges">
-
-                                    <path
-                                        fill="#25201A"
-                                        d="M8 1H13V3H15V8H12V10H9V12H7V15H3V13H1V10H4V8H6V3H8Z"
-                                    />
-
-                                    <path
-                                        fill="#965B36"
-                                        d="M8 3H12V4H13V7H10V9H7V5H8Z"
-                                    />
-
-                                    <path
-                                        fill="#B9814B"
-                                        d="M9 3H12V5H9Z"
-                                    />
-
-                                    <path
-                                        fill="#A8A398"
-                                        d="M6 9H8V11H6V14H3V12H5Z"
-                                    />
-
-                                </svg>
-
-                            <% } %>
+                            <span id="nivelHud">0</span>
 
                         </div>
 
                     </div>
 
-                    <div class="experience">
-
-                        <span>10</span>
-
-                        <div class="experience-track">
-                            <div class="experience-fill"></div>
-                        </div>
-
-                    </div>
-
-                    <div id="hudHotbar"
-                         class="hud-hotbar">
-                    </div>
-
-                </div>
-
-            </div>
-
-            <!-- LADO DIREITO: CATÁLOGO -->
-
-            <aside class="catalog">
-
-                <div class="catalog-header">
-
-                    <span class="catalog-title">
-                        Itens disponíveis
-                    </span>
-
-                </div>
-
-                <div id="catalog"
-                     class="catalog-grid">
-                </div>
-
-                <div class="catalog-footer">
-
-                    <input
-                        id="search"
-                        type="search"
-                        placeholder="Pesquisar..."
-                        autocomplete="off"
-                        aria-label="Pesquisar itens"
-                    >
-
-                    <div class="search-icon">
-
-                        <svg viewBox="0 0 16 16"
-                             shape-rendering="crispEdges">
-
-                            <path
-                                fill="#C6C6C6"
-                                d="M2 1H9V2H11V4H12V9H10V11H4V10H2V8H1V3H2Z"
-                            />
-
-                            <path
-                                fill="#424242"
-                                d="M4 3H8V4H10V8H8V9H4V8H3V4H4Z"
-                            />
-
-                            <path
-                                fill="#C6C6C6"
-                                d="M10 10H12V12H14V14H15V15H12V13H10Z"
-                            />
-
-                        </svg>
-
-                    </div>
+                    <div id="hudHotbar" class="hud-hotbar" hidden></div>
 
                 </div>
 
                 <p id="status" role="status"></p>
+
+            </div>
+
+            <aside class="jei-sidebar">
+
+                <div class="jei-header">
+
+                    <button type="button" class="jei-square-btn" id="jeiPrevPageBtn" title="Página anterior">
+
+                        <svg viewBox="0 0 16 16">
+                            <polygon points="11,3 5,8 11,13" fill="#FFFFFF" />
+                        </svg>
+
+                    </button>
+
+                    <span id="jeiPageIndicator" class="jei-page-indicator">
+                        1/1
+                    </span>
+
+                    <button type="button" class="jei-square-btn" id="jeiNextPageBtn" title="Próxima página">
+
+                        <svg viewBox="0 0 16 16">
+                            <polygon points="5,3 11,8 5,13" fill="#FFFFFF" />
+                        </svg>
+
+                    </button>
+
+                </div>
+
+                <div id="catalog" class="jei-grid"></div>
+
+                <div class="jei-footer">
+
+                    <input id="search" class="jei-search" type="search" placeholder="Pesquisar..." autocomplete="off">
+
+                    <button type="button" class="jei-square-btn" id="configButton" title="Editar jogador">
+
+                        <svg viewBox="0 0 16 16">
+
+                            <path
+                                d="M9 1h3v1h1v3h-1v1h-2v1H9v1H8v1H7v1H6v1H5v2H3v1H2v-1H1v-2h1v-1h2V9h1V8h1V7h1V6h1V4h1V2h1V1z"
+                                fill="#1E1E1E" />
+
+                            <path d="M10 2h2v1h-1v2h2v1h-2v1H9v1H8v1H7v1H6v1H5v1H3v1H2v-1h1v-2h1V9h1V8h1V7h1V6h1V4h1V2z"
+                                fill="#A8A8A8" />
+
+                        </svg>
+
+                    </button>
+
+                </div>
 
             </aside>
 
@@ -362,15 +198,11 @@
 
     </main>
 
-    <!-- MODAL DE QUANTIDADE -->
-
     <dialog id="editor" class="mc-dialog">
 
-        <form id="editForm">
+        <form id="editForm" class="mc-qty-box">
 
-            <h2 id="modalTitle">
-                Adicionar item
-            </h2>
+            <h2 id="modalTitle">Adicionar item</h2>
 
             <div class="item-preview">
 
@@ -380,58 +212,46 @@
 
             </div>
 
-            <label for="quantity">
-                Quantidade
-            </label>
+            <label for="quantity">Quantidade</label>
 
-            <input
-                id="quantity"
-                type="number"
-                min="1"
-                max="64"
-                value="1"
-                required
-            >
+            <div class="mc-qty-controls">
 
-            <div class="quantity-buttons">
-
-                <button type="button" data-qty="1">
-                    1
+                <button type="button" class="jei-square-btn" id="minusQty">
+                    -1
                 </button>
 
-                <button type="button" data-qty="16">
-                    16
-                </button>
+                <input id="quantity" class="mc-qty-input" type="number" min="1" max="64" value="1" required>
 
-                <button type="button" data-qty="32">
-                    32
-                </button>
-
-                <button type="button" data-qty="64">
-                    64
+                <button type="button" class="jei-square-btn" id="plusQty">
+                    +1
                 </button>
 
             </div>
 
-            <button type="submit" class="mc-button">
-                Confirmar
-            </button>
+            <div class="quantity-buttons">
 
-            <button
-                type="button"
-                id="remove"
-                class="mc-button danger">
+                <button type="button" class="mc-button" data-qty="1">1</button>
+                <button type="button" class="mc-button" data-qty="16">16</button>
+                <button type="button" class="mc-button" data-qty="32">32</button>
+                <button type="button" class="mc-button" data-qty="64">64</button>
+
+            </div>
+
+            <div class="mc-qty-actions">
+
+                <button type="button" id="cancel" class="mc-button">
+                    Cancelar
+                </button>
+
+                <button type="submit" class="mc-button">
+                    Confirmar
+                </button>
+
+            </div>
+
+            <button type="button" id="remove" class="mc-button danger">
 
                 Excluir item
-
-            </button>
-
-            <button
-                type="button"
-                id="cancel"
-                class="mc-button">
-
-                Cancelar
 
             </button>
 
@@ -439,9 +259,120 @@
 
     </dialog>
 
-    <!-- TOOLTIP -->
+    <dialog id="perfilDialog" class="profile-dialog">
 
-    <div id="tooltip" hidden></div>
+        <form id="perfilForm" class="login-form">
+
+            <h2>Editar jogador</h2>
+
+            <label for="perfilNome">Apelido</label>
+
+            <input id="perfilNome" type="text" maxlength="50" required>
+
+            <label for="perfilVida">Vida (0 a 20)</label>
+
+            <input id="perfilVida" type="number" min="0" max="20" step="0.5" required>
+
+            <label for="perfilNivel">Nível</label>
+
+            <input id="perfilNivel" type="number" min="0" max="2147483647" required>
+
+            <label for="senhaAtual">Senha atual</label>
+
+            <input id="senhaAtual" type="password" autocomplete="current-password">
+
+            <label for="novaSenha">Nova senha</label>
+
+            <input id="novaSenha" type="password" minlength="6" placeholder="Opcional" autocomplete="new-password">
+
+            <p id="perfilStatus" role="status"></p>
+
+            <button type="submit" class="mc-button">
+                Salvar alterações
+            </button>
+
+            <button type="button" id="fecharPerfil" class="mc-button">
+
+                Voltar ao inventário
+
+            </button>
+
+        </form>
+
+    </dialog>
+
+    <div id="tooltip" class="mc-tooltip" hidden></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quantity = document.getElementById('quantity');
+            const catalog = document.getElementById('catalog');
+            const indicator = document.getElementById('jeiPageIndicator');
+
+            document.getElementById('minusQty').onclick = () => {
+                quantity.value = Math.max(
+                    1,
+                    (Number(quantity.value) || 1) - 1
+                );
+            };
+
+            document.getElementById('plusQty').onclick = () => {
+                quantity.value = Math.min(
+                    Number(quantity.max),
+                    (Number(quantity.value) || 1) + 1
+                );
+            };
+
+            document.getElementById('configButton').onclick = () => {
+                document.getElementById('perfil').click();
+            };
+
+            function atualizarPagina() {
+                const altura = catalog.clientHeight;
+
+                if (!altura) return;
+
+                const total = Math.max(
+                    1,
+                    Math.ceil(catalog.scrollHeight / altura)
+                );
+
+                const atual = Math.min(
+                    total,
+                    Math.round(catalog.scrollTop / altura) + 1
+                );
+
+                indicator.textContent = atual + '/' + total;
+            }
+
+            document.getElementById('jeiPrevPageBtn').onclick = () => {
+                catalog.scrollBy({
+                    top: -catalog.clientHeight,
+                    behavior: 'smooth'
+                });
+            };
+
+            document.getElementById('jeiNextPageBtn').onclick = () => {
+                catalog.scrollBy({
+                    top: catalog.clientHeight,
+                    behavior: 'smooth'
+                });
+            };
+
+            catalog.addEventListener('scroll', atualizarPagina);
+
+            document.getElementById('search').addEventListener('input', () => {
+                catalog.scrollTop = 0;
+                atualizarPagina();
+            });
+
+            new MutationObserver(atualizarPagina).observe(catalog, {
+                childList: true
+            });
+
+            new ResizeObserver(atualizarPagina).observe(catalog);
+        });
+    </script>
 
 </body>
 
