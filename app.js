@@ -12,7 +12,7 @@ var app = express();
 
 
 app.get('/inicio', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'inicial.html'));
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // view engine setup
