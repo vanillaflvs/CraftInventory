@@ -40,6 +40,35 @@ npm start
 
 **Note:** Make sure your MySQL database is properly configured before running the application. Nodemon is used to automatically restart the server when changes are detected during development.
 
+## Database Setup & Running
+
+* **Configure the Database:**
+  Ensure your local MySQL server is running. Create the database and execute the provided SQL script (`script.sql` or `craftProj.sql`) to set up the tables:
+  ```sql
+  CREATE DATABASE CraftDb;
+  ```
+* **Configure Environment Variables:**
+  Create a `.env` file in the root directory based on `.env.example` and configure your local MySQL credentials:
+  ```env
+  PORT=3000
+  DB_HOST=localhost
+  DB_PORT=3306
+  DB_USER=root
+  DB_PASSWORD=1234
+  DB_NAME=CraftDb
+  ```
+  > **Note:** Adjust `DB_PASSWORD` and `DB_NAME` if your local MySQL setup uses a password or a different database name.
+* **Start the application:**
+  ```bash
+  npm start
+  ```
+  > Nodemon is used to automatically restart the server when changes are detected during development.
+* **Access the Application:**
+  Once the server is running and connected to the database, open your browser and navigate to:
+  ```text
+  http://localhost:3000
+  ```
+
 ## Usage
 
 CraftInventory allows users to manage their own item inventories through a web interface inspired by Minecraft. The application supports multiple user accounts, with each user having an individual inventory.
