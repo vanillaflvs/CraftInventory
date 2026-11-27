@@ -1,11 +1,11 @@
-
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-var jogadoresRouter = require('./routes/Jogadores');
+const jogadoresRouter = require('./routes/Jogadores');
+const inventarioRouter = require('./routes/inventario');
 
 var app = express();
 
@@ -22,6 +22,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Rotas
 app.use('/jogadores', jogadoresRouter);
+app.use('/inventario', inventarioRouter);
 
 app.get('/inicio', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
