@@ -42,8 +42,8 @@ INSERT INTO categoria (tipo) VALUES
 ('Itens Diversos');
 
 INSERT INTO jogador (vida, nivel, apelido, imagem) VALUES (10.0, 67, 'Manoel Gomes', '');
-INSERT INTO jogador (vida, nivel, apelido, imagem) VALUES (10.0, 67, 'Manoel Gomes', 'semimagem');
-INSERT INTO jogador (vida, nivel, apelido, imagem) VALUES (10.0, 67, 'Manoel Gomes', 'semimagem');
+INSERT INTO jogador (vida, nivel, apelido, imagem) VALUES (20.0, 100, 'pele', '');
+INSERT INTO jogador (vida, nivel, apelido, imagem) VALUES (5.0, 67, 'steve', 'teste.jpg');
 
 INSERT INTO itens(id_categoria,dano, item_Img, nome) VALUES
 
