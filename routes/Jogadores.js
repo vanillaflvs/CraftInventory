@@ -54,7 +54,7 @@ router.post('/cadastrar', async (req, res) => {
 // ABRIR FORMULÁRIO DE EDIÇÃO
 router.get('/editar/:id', async (req, res) => {
     try {
-        const id = req.params.id;
+        const {id} = req.params;
 
         const [jogadores] = await db.query(
             'SELECT * FROM jogador WHERE id_jogador = ?',
