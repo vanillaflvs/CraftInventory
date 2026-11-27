@@ -20,13 +20,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.get('/', (req, res) => {
+    res.redirect('/jogadores');
+});
+
 // Rotas
 app.use('/jogadores', jogadoresRouter);
 app.use('/inventario', inventarioRouter);
-
-app.get('/inicio', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
 
 // Erro 404
 app.use(function (req, res, next) {
