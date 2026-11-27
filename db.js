@@ -4,7 +4,7 @@ const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
   password: '1234',
-  database: 'Projmine',
+  database: 'CraftDb',
   waitForConnections: true,
   connectionLimit: 10
 });
