@@ -18,16 +18,18 @@ create table jogador(
 	vida double,
     nivel int,
 	apelido varchar(50),
-	limite_inventario int set default 36,
+	limite_inventario int default 36,
     imagem varchar(300)
 );
-CREATE TABLE itens_Jogador (
-    id_jogador INT,
-    id_item INT,
-    quantidade INT,
 
-    CONSTRAINT fk_jogador FOREIGN KEY (id_jogador) REFERENCES jogador(id_jogador),
-    CONSTRAINT fk_item FOREIGN KEY (id_item)REFERENCES itens(id_item)
+CREATE TABLE itens_Jogador (
+    id_jogador INT NOT NULL,
+    slot_index INT NOT NULL,
+    id_item INT NOT NULL,
+    quantidade INT NOT NULL DEFAULT 1,
+    PRIMARY KEY (id_jogador, slot_index),
+    CONSTRAINT fk_jogador FOREIGN KEY (id_jogador) REFERENCES jogador(id_jogador) ON DELETE CASCADE,
+    CONSTRAINT fk_item FOREIGN KEY (id_item) REFERENCES itens(id_item)
 );
 
 
@@ -44,7 +46,7 @@ INSERT INTO itens
 (id_categoria,dano, item_Img, nome)
 VALUES
 
-(1,0, 'cotademalha.png', 'Armadura de Cota de Malha'),
+(2,0, 'cotademalha.png', 'Armadura de Cota de Malha'),
 (1,0, 'areia.png', 'Bloco de Areia'),
 (1,0, 'bau.png', 'Bau'),
 (1,0, 'grama.png', 'Bloco de Grama'),
@@ -68,17 +70,15 @@ VALUES
 (3,0, 'macadourada.png', 'Maçã Dourada'),
 (3,0, 'pao.png', 'Pão'),
 
--- ARMAS (id_categoria = 5)
 (5, 1, 'arco.png', 'Arco'),
 (5,1, 'flecha.png', 'Flecha'),
 (5,5, 'espadaouro.png', 'Espada de Ouro'),
 
--- FERRAMENTAS (id_categoria = 4)
 (4,0, 'enxadadiamante.png', 'Enxada de Diamante'),
 (4,0, 'machadoferro.png', 'Machado de Ferro'),
 (4,0, 'picaretanetherita.png', 'Picareta de Netherita'),
 
 -- ITENS DIVERSOS (id_categoria = 6)
-(6, 0, 'baldeagua.png', 'Balde de Água'),
+(4, 0, 'baldeagua.png', 'Balde de Água'),
 (6, 0, 'pedra.png', 'Pá de Pedra'),
 (6, 0, 'peroladofim.png', 'Pérola do Fim');

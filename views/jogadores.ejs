@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <title>Gerenciar Jogadores</title>
+
+        <link rel="stylesheet" href="/stylesheets/jogadores.css">
+    </head>
+
+    <body>
+
+        <header>
+            <h1>Gerenciar Jogadores</h1>
+            <p>Cadastre, edite e exclua jogadores.</p>
+        </header>
+
+        <main class="container">
+
+
+            <section class="formulario">
+
+                <% if (jogadorEditando) { %>
+
+                    <h2>Editar Jogador</h2>
+
+                    <form action="/jogadores/editar/<%= jogadorEditando.id_jogador %>" method="POST">
+
+                        <label>Apelido</label>
+
+                        <input type="text" name="apelido" maxlength="50" value="<%= jogadorEditando.apelido %>" required>
+
+                        <label>Vida</label>
+
+                        <input type="number" name="vida" step="0.1" min="0" value="<%= jogadorEditando.vida %>" required>
+
+                        <label>Nível</label>
+
+                        <input type="number" name="nivel" min="0" value="<%= jogadorEditando.nivel %>" required>
+                        <label>Imagem</label>
+
+                        <input type="text" name="imagem" maxlength="300" value="<%= jogadorEditando.imagem || '' %>"
+                            placeholder="Ex: steve.png">
+
+                        <button type="submit">
+                            Salvar Alterações
+                        </button>
+
+                        <a href="/jogadores" class="cancelar">
+                            Cancelar
+                        </a>
+
+                    </form>
+
+                    <% } else { %>
+
+                        <h2>Cadastrar Jogador</h2>
+
+                        <form action="/jogadores/cadastrar" method="POST">
+
+                            <label>Apelido</label>
+
+                            <input type="text" name="apelido" maxlength="50" placeholder="Digite o apelido" required>
+
+                            <label>Vida</label>
+
+                            <input type="number" name="vida" step="0.1" min="0" value="20" required>
+
+                            <label>Nível</label>
+
+                            <input type="number" name="nivel" min="0" value="1" required>
+
+
+                            <label>Imagem</label>
+
+                            <input type="text" name="imagem" maxlength="300" placeholder="Ex: steve.png">
+
+                            <button type="submit">
+                                Cadastrar Jogador
+                            </button>
+
+                        </form>
+
+                        <% } %>
+
+            </section>
+
+            <section class="listagem">
+
+                <h2>Jogadores Cadastrados</h2>
+
+                <% if (jogadores.length===0) { %>
+
+                    <p>Nenhum jogador cadastrado.</p>
+
+                    <% } else { %>
+
+                        <table>
+
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Imagem</th>
+                                    <th>Apelido</th>
+                                    <th>Vida</th>
+                                    <th>Nível</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                <% jogadores.forEach(function(jogador) { %>
+
+                                    <tr>
+
+                                        <td>
+                                            <%= jogador.id_jogador %>
+                                        </td>
+
+                                        <td>
+                                            <% if (jogador.imagem) { %>
+
+                                                <img src="/imagens/<%= jogador.imagem %>" alt="Imagem do jogador"
+                                                    class="imagem-jogador">
+
+                                                <% } else { %>
+
+                                                    Sem imagem
+
+                                                    <% } %>
+                                        </td>
+
+                                        <td>
+                                            <%= jogador.apelido %>
+                                        </td>
+
+                                        <td>
+                                            <%= jogador.vida %>
+                                        </td>
+
+                                        <td>
+                                            <%= jogador.nivel %>
+                                        </td>
+
+                                        <td class="acoes">
+
+                                            <a href="/inventario?jogador=<%= jogador.id_jogador %>" class="inventario">
+
+                                                Inventário
+
+                                            </a>
+
+                                            <a href="/jogadores/editar/<%= jogador.id_jogador %>" class="editar">
+
+                                                Editar
+
+                                            </a>
+
+                                            <form action="/jogadores/excluir/<%= jogador.id_jogador %>" method="POST"
+                                                onsubmit="return confirm('Deseja excluir este jogador?')">
+
+                                                <button type="submit" class="excluir">
+
+                                                    Excluir
+
+                                                </button>
+
+                                            </form>
+
+                                        </td>
+
+                                    </tr>
+
+                                    <% }); %>
+
+                            </tbody>
+
+                        </table>
+
+                        <% } %>
+
+            </section>
+
+        </main>
+
+    </body>
+</html>

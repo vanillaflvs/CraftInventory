@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventário Clássico do Minecraft</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/stylesheets/inventario.css">
+    <style>
+        .mc-back-btn {
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            z-index: 50;
+            background: #C6C6C6;
+            color: #262626;
+            text-decoration: none;
+            font-size: 9px;
+            line-height: 1;
+            padding: 10px 12px;
+            border-top: 3px solid #FFFFFF;
+            border-left: 3px solid #FFFFFF;
+            border-right: 3px solid #555555;
+            border-bottom: 3px solid #555555;
+            box-shadow: 0 0 0 2px #181818;
+            image-rendering: pixelated;
+        }
+        .mc-back-btn:hover {
+            background: #D8D8D8;
+        }
+        .mc-back-btn:active {
+            border-top: 3px solid #555555;
+            border-left: 3px solid #555555;
+            border-right: 3px solid #FFFFFF;
+            border-bottom: 3px solid #FFFFFF;
+        }
+        .mc-top-right {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-width: 0;
+        }
+        .mc-player-stats {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            gap: 8px;
+            padding: 4px 12px 10px 12px;
+            min-height: 152px;
+        }
+        .mc-player-name {
+            color: #3F3F3F;
+            font-size: 13px;
+            margin: 0;
+            line-height: 1.2;
+            text-shadow: 1px 1px 0 #FFFFFF;
+            word-break: break-word;
+        }
+        .mc-hearts-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px;
+            align-items: center;
+        }
+        .mc-heart {
+            width: 18px;
+            height: 18px;
+            image-rendering: pixelated;
+            flex-shrink: 0;
+        }
+
+        /* MODAL DE QUANTIDADE ESTILO MINECRAFT */
+        .mc-qtd-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            padding: 16px;
+        }
+        .mc-qtd-backdrop.open {
+            display: flex;
+        }
+        .mc-qtd-modal {
+            width: 100%;
+            max-width: 390px;
+            background: #C6C6C6;
+            border-top: 4px solid #FFFFFF;
+            border-left: 4px solid #FFFFFF;
+            border-right: 4px solid #555555;
+            border-bottom: 4px solid #555555;
+            box-shadow: 0 0 0 3px #181818;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            image-rendering: pixelated;
+        }
+        .mc-qtd-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .mc-qtd-icon {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            flex-shrink: 0;
+            image-rendering: pixelated;
+        }
+        .mc-qtd-title {
+            color: #262626;
+            font-size: 11px;
+            line-height: 1.45;
+            margin: 0;
+            word-break: break-word;
+        }
+        .mc-qtd-stepper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .mc-qtd-btn {
+            background: #8B8B8B;
+            color: #FFFFFF;
+            font-family: inherit;
+            font-size: 11px;
+            line-height: 1;
+            border-top: 3px solid #D4D4D4;
+            border-left: 3px solid #D4D4D4;
+            border-right: 3px solid #3F3F3F;
+            border-bottom: 3px solid #3F3F3F;
+            box-shadow: 0 0 0 2px #181818;
+            cursor: pointer;
+            text-shadow: 2px 2px 0 #262626;
+        }
+        .mc-qtd-btn:hover {
+            background: #9E9E9E;
+        }
+        .mc-qtd-btn:active {
+            border-top: 3px solid #3F3F3F;
+            border-left: 3px solid #3F3F3F;
+            border-right: 3px solid #D4D4D4;
+            border-bottom: 3px solid #D4D4D4;
+        }
+        .mc-qtd-step-btn {
+            width: 44px;
+            height: 36px;
+        }
+        .mc-qtd-input {
+            width: 110px;
+            height: 36px;
+            background: #000000;
+            color: #FFFFFF;
+            font-family: inherit;
+            font-size: 13px;
+            text-align: center;
+            border-top: 3px solid #555555;
+            border-left: 3px solid #555555;
+            border-right: 3px solid #FFFFFF;
+            border-bottom: 3px solid #FFFFFF;
+            box-shadow: 0 0 0 2px #181818;
+            outline: none;
+        }
+        .mc-qtd-presets {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+        .mc-qtd-preset {
+            height: 34px;
+        }
+        .mc-qtd-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 2px;
+        }
+        .mc-qtd-action {
+            height: 38px;
+        }
+    </style>
+</head>
+<body>
+
+    <a href="/jogadores" class="mc-back-btn" aria-label="Voltar para a página de jogadores">&lt; JOGADORES</a>
+
+    <div class="mc-scenery" aria-hidden="true"></div>
+    <div class="mc-vignette" aria-hidden="true"></div>
+
+    <!-- FORMULÁRIO PRINCIPAL PARA EQUIPAR / QUANTIDADE -->
+    <form id="formEquipar" action="/inventario/equipar" method="POST" style="display: none;">
+        <input type="hidden" name="id_jogador" id="campoIdJogador" value="<%= jogadorAtual ? jogadorAtual.id_jogador : '' %>">
+        <input type="hidden" name="id_item" id="campoIdItem" value="">
+        <input type="hidden" name="slot_index" id="campoSlotIndex" value="<%= Number(slotSelecionado) %>">
+        <input type="hidden" name="quantidade" id="campoQuantidade" value="1">
+    </form>
+
+    <!-- FORMULÁRIO PARA REMOVER ITEM NA LIXEIRA -->
+    <form id="formRemover" action="/inventario/remover" method="POST" style="display: none;">
+        <input type="hidden" name="id_jogador" value="<%= jogadorAtual ? jogadorAtual.id_jogador : '' %>">
+        <input type="hidden" name="slot_index" id="campoSlotRemover" value="<%= Number(slotSelecionado) %>">
+    </form>
+
+    <main class="mc-window" aria-label="Inventário do Minecraft">
+        <section class="mc-top-section">
+            <div class="mc-armor-col">
+                <div class="mc-slot <%= Number(slotSelecionado) === 0 ? 'selected' : '' %>" data-slot="0" title="Capacete">
+                    <% if (slots[0]) { %>
+                        <img src="<%= slots[0].imgUrl %>" alt="<%= slots[0].nome %>" style="width:40px;height:40px;object-fit:contain;">
+                        <% if (slots[0].quantidade > 1) { %><span class="slot-count"><%= slots[0].quantidade %></span><% } %>
+                    <% } else { %>
+                        <svg class="slot-silhouette" viewBox="0 0 16 16" fill="#4A4A4A" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 4h10v2h1v6h-2v-3H4v3H2V6h1V4zm2 2v1h6V6H5z"/>
+                        </svg>
+                    <% } %>
+                </div>
+                <div class="mc-slot <%= Number(slotSelecionado) === 1 ? 'selected' : '' %>" data-slot="1" title="Peitoral">
+                    <% if (slots[1]) { %>
+                        <img src="<%= slots[1].imgUrl %>" alt="<%= slots[1].nome %>" style="width:40px;height:40px;object-fit:contain;">
+                        <% if (slots[1].quantidade > 1) { %><span class="slot-count"><%= slots[1].quantidade %></span><% } %>
+                    <% } else { %>
+                        <svg class="slot-silhouette" viewBox="0 0 16 16" fill="#4A4A4A" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M2 3h4v2h4V3h4v4h-2v6H4V7H2V3z"/>
+                        </svg>
+                    <% } %>
+                </div>
+                <div class="mc-slot <%= Number(slotSelecionado) === 2 ? 'selected' : '' %>" data-slot="2" title="Calças">
+                    <% if (slots[2]) { %>
+                        <img src="<%= slots[2].imgUrl %>" alt="<%= slots[2].nome %>" style="width:40px;height:40px;object-fit:contain;">
+                        <% if (slots[2].quantidade > 1) { %><span class="slot-count"><%= slots[2].quantidade %></span><% } %>
+                    <% } else { %>
+                        <svg class="slot-silhouette" viewBox="0 0 16 16" fill="#4A4A4A" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M4 2h8v12H9V7H7v7H4V2z"/>
+                        </svg>
+                    <% } %>
+                </div>
+                <div class="mc-slot <%= Number(slotSelecionado) === 3 ? 'selected' : '' %>" data-slot="3" title="Botas">
+                    <% if (slots[3]) { %>
+                        <img src="<%= slots[3].imgUrl %>" alt="<%= slots[3].nome %>" style="width:40px;height:40px;object-fit:contain;">
+                        <% if (slots[3].quantidade > 1) { %><span class="slot-count"><%= slots[3].quantidade %></span><% } %>
+                    <% } else { %>
+                        <svg class="slot-silhouette" viewBox="0 0 16 16" fill="#4A4A4A" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 5h3v5h1v3H2v-3h1V5zm7 0h3v5h1v3H9v-3h1V5z"/>
+                        </svg>
+                    <% } %>
+                </div>
+            </div>
+
+            <div class="mc-player-box" aria-label="Espaço do Personagem" style="display:flex;flex-direction:column;justify-content:space-between;padding:8px;color:#FFF;font-size:9px;">
+                <% if (jogadores.length > 0) { %>
+                    <form action="/inventario" method="GET">
+                        <select name="jogador" onchange="this.form.submit()" style="width:100%;background:#1A1A1A;color:#FFF;border:1px solid #555;padding:4px;font-size:8px;">
+                            <% jogadores.forEach(function(j) { %>
+                                <option value="<%= j.id_jogador %>" <%= jogadorAtual && jogadorAtual.id_jogador === j.id_jogador ? 'selected' : '' %>>
+                                    <%= j.apelido %>
+                                </option>
+                            <% }); %>
+                        </select>
+                    </form>
+                <% } %>
+            </div>
+
+            <!-- COLUNA DIREITA: NOME + CORAÇÕES NA ÁREA VERDE E ESCUDO ABAIXO -->
+            <div class="mc-top-right">
+                <div class="mc-player-stats" aria-label="Informações do Jogador">
+                    <% if (jogadorAtual) {
+                        const vida = Number(jogadorAtual.vida) || 0;
+                        const coracoes = Math.max(10, Math.ceil(vida / 2));
+                    %>
+                        <h2 class="mc-player-name"><%= jogadorAtual.apelido %></h2>
+                        <div class="mc-hearts-bar" title="Vida: <%= vida %>">
+                            <% for (let c = 1; c <= coracoes; c++) {
+                                const cheio = vida >= c * 2;
+                                const meio = !cheio && vida >= (c * 2) - 1;
+                            %>
+                                <svg class="mc-heart" viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                    <!-- Contorno preto estilo Minecraft -->
+                                    <path d="M2 0h2v1h1V0h2v1h1v1h1v3H8v1H7v1H6v1H5v1H4V8H3V7H2V6H1V5H0V2h1V1h1V0z" fill="#181818"/>
+                                    <!-- Fundo vazio -->
+                                    <path d="M2 1h2v1h1V1h2v1h1v3H7v1H6v1H5v1H4V7H3V6H2V5H1V2h1V1z" fill="#3B3B3B"/>
+                                    <% if (cheio) { %>
+                                        <!-- Coração cheio -->
+                                        <path d="M2 1h2v1h1V1h2v1h1v3H7v1H6v1H5v1H4V7H3V6H2V5H1V2h1V1z" fill="#E01B24"/>
+                                        <rect x="2" y="2" width="1" height="1" fill="#FF8A8A"/>
+                                    <% } else if (meio) { %>
+                                        <!-- Meio coração (metade esquerda) -->
+                                        <path d="M2 1h2v1h1v6H4V7H3V6H2V5H1V2h1V1z" fill="#E01B24"/>
+                                        <rect x="2" y="2" width="1" height="1" fill="#FF8A8A"/>
+                                    <% } %>
+                                </svg>
+                            <% } %>
+                        </div>
+                    <% } else { %>
+                        <h2 class="mc-player-name">Sem jogador</h2>
+                    <% } %>
+                </div>
+
+                <div class="mc-slot <%= Number(slotSelecionado) === 4 ? 'selected' : '' %>" data-slot="4" title="Mão Secundária / Escudo">
+                    <% if (slots[4]) { %>
+                        <img src="<%= slots[4].imgUrl %>" alt="<%= slots[4].nome %>" style="width:40px;height:40px;object-fit:contain;">
+                        <% if (slots[4].quantidade > 1) { %><span class="slot-count"><%= slots[4].quantidade %></span><% } %>
+                    <% } else { %>
+                        <svg class="slot-silhouette" viewBox="0 0 16 16" fill="#4A4A4A" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 2h10v7c0 3-5 5-5 5s-5-2-5-5V2zm2 2v4c0 1.5 3 3 3 3s3-1.5 3-3V4H5z"/>
+                        </svg>
+                    <% } %>
+                </div>
+            </div>
+        </section>
+
+        <!-- INVENTÁRIO PRINCIPAL 3x9 (SLOTS 5..31) -->
+        <section class="mc-main-section" aria-label="Inventário Principal">
+            <div class="mc-grid-9">
+                <% for (let i = 5; i <= 31; i++) { %>
+                    <div class="mc-slot <%= Number(slotSelecionado) === i ? 'selected' : '' %>" data-slot="<%= i %>" title="<%= slots[i] ? slots[i].nome : 'Slot ' + i %>">
+                        <% if (slots[i]) { %>
+                            <img src="<%= slots[i].imgUrl %>" alt="<%= slots[i].nome %>" style="width:40px;height:40px;object-fit:contain;">
+                            <% if (slots[i].quantidade > 1) { %><span class="slot-count"><%= slots[i].quantidade %></span><% } %>
+                        <% } %>
+                    </div>
+                <% } %>
+            </div>
+        </section>
+
+        <!-- BARRA RÁPIDA 1x9 (SLOTS 32..40) -->
+        <section class="mc-hotbar-section" aria-label="Barra Rápida">
+            <div class="mc-grid-9">
+                <% for (let i = 32; i <= 40; i++) { %>
+                    <div class="mc-slot <%= Number(slotSelecionado) === i ? 'selected' : '' %>" data-slot="<%= i %>" title="<%= slots[i] ? slots[i].nome : 'Hotbar ' + (i - 31) %>">
+                        <% if (slots[i]) { %>
+                            <img src="<%= slots[i].imgUrl %>" alt="<%= slots[i].nome %>" style="width:40px;height:40px;object-fit:contain;">
+                            <% if (slots[i].quantidade > 1) { %><span class="slot-count"><%= slots[i].quantidade %></span><% } %>
+                        <% } %>
+                    </div>
+                <% } %>
+            </div>
+        </section>
+
+        <!-- LIXEIRA (ENVIA POST /inventario/remover) -->
+        <div class="mc-trash-tab">
+            <button type="submit" form="formRemover" class="mc-trash-slot" id="mcTrashSlot" title="Lixeira (Clique para remover item do slot selecionado)" aria-label="Lixeira">
+                <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5 2h6v1h3v2H2V3h3V2zm-1 4h8l-1 8H5L4 6zm2 1v6h1V7H6zm3 0v6h1V7H9z" fill="#3F3F3F"/>
+                    <path d="M5 1h6v1h3v2H2V2h3V1zm-1 4h8l-1 8H5L4 5zm2 1v6h1V6H6zm3 0v6h1V6H9z" fill="#D8D8D8"/>
+                </svg>
+            </button>
+        </div>
+    </main>
+
+    <!-- BARRA LATERAL JEI COM ITENS DO BANCO -->
+    <aside class="jei-sidebar" aria-label="Lista de Itens JEI">
+        <div class="jei-header">
+            <span class="jei-page-indicator">1/1</span>
+        </div>
+
+        <div class="jei-grid" id="jeiGrid">
+            <%
+                const termo = String(busca || '').trim().toLowerCase();
+                const filtrados = termo
+                    ? itens.filter(it => (it.nome || '').toLowerCase().includes(termo))
+                    : itens;
+                filtrados.forEach(function(item) {
+            %>
+                <div
+                    class="jei-cell has-item"
+                    data-id-item="<%= item.id_item %>"
+                    data-nome-item="<%= item.nome %>"
+                    data-img-item="<%= item.imgUrl %>"
+                    title="<%= item.nome %>"
+                >
+                    <img src="<%= item.imgUrl %>" alt="<%= item.nome %>">
+                </div>
+            <% }); %>
+        </div>
+
+        <form class="jei-footer" action="/inventario" method="GET">
+            <input type="hidden" name="jogador" value="<%= jogadorAtual ? jogadorAtual.id_jogador : '' %>">
+            <input type="hidden" name="slot" value="<%= Number(slotSelecionado) %>">
+            <input
+                type="text"
+                name="busca"
+                class="jei-search"
+                id="jeiSearchInput"
+                value="<%= busca %>"
+                placeholder=""
+                aria-label="Pesquisar itens"
+                autocomplete="off"
+            />
+        </form>
+    </aside>
+
+    <!-- MODAL DE QUANTIDADE AO CLICAR NO ITEM -->
+    <div class="mc-qtd-backdrop" id="qtdModalBackdrop" role="dialog" aria-modal="true" aria-labelledby="qtdModalTitle">
+        <div class="mc-qtd-modal">
+            <div class="mc-qtd-header">
+                <img id="qtdModalImg" class="mc-qtd-icon" src="" alt="">
+                <h2 id="qtdModalTitle" class="mc-qtd-title">Item (Máx. 64)</h2>
+            </div>
+
+            <div class="mc-qtd-stepper">
+                <button type="button" class="mc-qtd-btn mc-qtd-step-btn" id="btnMenosUm" aria-label="Diminuir 1">-1</button>
+                <input type="number" id="qtdModalInput" class="mc-qtd-input" min="1" max="64" value="1" aria-label="Quantidade">
+                <button type="button" class="mc-qtd-btn mc-qtd-step-btn" id="btnMaisUm" aria-label="Aumentar 1">+1</button>
+            </div>
+
+            <div class="mc-qtd-presets">
+                <button type="button" class="mc-qtd-btn mc-qtd-preset" data-qtd="1">1</button>
+                <button type="button" class="mc-qtd-btn mc-qtd-preset" data-qtd="16">16</button>
+                <button type="button" class="mc-qtd-btn mc-qtd-preset" data-qtd="32">32</button>
+                <button type="button" class="mc-qtd-btn mc-qtd-preset" data-qtd="64">64</button>
+            </div>
+
+            <div class="mc-qtd-actions">
+                <button type="button" class="mc-qtd-btn mc-qtd-action" id="btnCancelarQtd">Cancelar</button>
+                <button type="button" class="mc-qtd-btn mc-qtd-action" id="btnConfirmarQtd">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const formEquipar = document.getElementById('formEquipar');
+        const campoIdItem = document.getElementById('campoIdItem');
+        const campoSlotIndex = document.getElementById('campoSlotIndex');
+        const campoSlotRemover = document.getElementById('campoSlotRemover');
+        const campoQuantidade = document.getElementById('campoQuantidade');
+        const mcSlots = document.querySelectorAll('.mc-window .mc-slot[data-slot]');
+
+        const qtdModalBackdrop = document.getElementById('qtdModalBackdrop');
+        const qtdModalImg = document.getElementById('qtdModalImg');
+        const qtdModalTitle = document.getElementById('qtdModalTitle');
+        const qtdModalInput = document.getElementById('qtdModalInput');
+        const btnMenosUm = document.getElementById('btnMenosUm');
+        const btnMaisUm = document.getElementById('btnMaisUm');
+        const btnCancelarQtd = document.getElementById('btnCancelarQtd');
+        const btnConfirmarQtd = document.getElementById('btnConfirmarQtd');
+
+        let itemPendenteId = null;
+
+        function normalizarQtd(valor) {
+            const num = parseInt(valor, 10);
+            if (isNaN(num) || num < 1) return 1;
+            if (num > 64) return 64;
+            return num;
+        }
+
+        function abrirModalQuantidade(cell) {
+            itemPendenteId = cell.getAttribute('data-id-item');
+            const nomeItem = cell.getAttribute('data-nome-item') || 'Item';
+            const imgItem = cell.getAttribute('data-img-item') || '';
+
+            qtdModalImg.src = imgItem;
+            qtdModalImg.alt = nomeItem;
+            qtdModalTitle.textContent = `${nomeItem} (Máx. 64)`;
+            qtdModalInput.value = 1;
+
+            qtdModalBackdrop.classList.add('open');
+            setTimeout(() => {
+                qtdModalInput.focus();
+                qtdModalInput.select();
+            }, 10);
+        }
+
+        function fecharModalQuantidade() {
+            qtdModalBackdrop.classList.remove('open');
+            itemPendenteId = null;
+        }
+
+        function confirmarQuantidade() {
+            if (!itemPendenteId) return;
+            const qtdFinal = normalizarQtd(qtdModalInput.value);
+            campoIdItem.value = itemPendenteId;
+            campoQuantidade.value = qtdFinal;
+            fecharModalQuantidade();
+            formEquipar.submit();
+        }
+
+        mcSlots.forEach(slot => {
+            slot.addEventListener('click', () => {
+                mcSlots.forEach(s => s.classList.remove('selected'));
+                slot.classList.add('selected');
+                const idx = slot.getAttribute('data-slot');
+                campoSlotIndex.value = idx;
+                campoSlotRemover.value = idx;
+            });
+        });
+
+        document.querySelectorAll('.jei-cell[data-id-item]').forEach(cell => {
+            cell.addEventListener('click', () => abrirModalQuantidade(cell));
+        });
+
+        btnMenosUm.addEventListener('click', () => {
+            qtdModalInput.value = normalizarQtd(Number(qtdModalInput.value) - 1);
+            qtdModalInput.focus();
+        });
+
+        btnMaisUm.addEventListener('click', () => {
+            qtdModalInput.value = normalizarQtd(Number(qtdModalInput.value) + 1);
+            qtdModalInput.focus();
+        });
+
+        document.querySelectorAll('.mc-qtd-preset[data-qtd]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                qtdModalInput.value = normalizarQtd(btn.getAttribute('data-qtd'));
+                qtdModalInput.focus();
+            });
+        });
+
+        qtdModalInput.addEventListener('change', () => {
+            qtdModalInput.value = normalizarQtd(qtdModalInput.value);
+        });
+
+        qtdModalInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                confirmarQuantidade();
+            }
+        });
+
+        btnCancelarQtd.addEventListener('click', fecharModalQuantidade);
+        btnConfirmarQtd.addEventListener('click', confirmarQuantidade);
+
+        qtdModalBackdrop.addEventListener('click', (e) => {
+            if (e.target === qtdModalBackdrop) fecharModalQuantidade();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && qtdModalBackdrop.classList.contains('open')) {
+                fecharModalQuantidade();
+            }
+        });
+    </script>
+
+</body>
+</html>
