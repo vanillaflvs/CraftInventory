@@ -83,7 +83,7 @@ router.get('/editar/:id', async (req, res) => {
 // ATUALIZAR JOGADOR
 router.post('/editar/:id', async (req, res) => {
     try {
-        const id = req.params.id;
+        const {id} = req.params;
 
         const {
             vida,
@@ -119,7 +119,7 @@ router.post('/editar/:id', async (req, res) => {
 // EXCLUIR JOGADOR
 router.post('/excluir/:id', async (req, res) => {
     try {
-        const id = req.params.id;
+        const {id} = req.params;
 
         await db.query(
             'DELETE FROM jogador WHERE id_jogador = ?',
