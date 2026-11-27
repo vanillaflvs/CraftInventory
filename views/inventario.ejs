@@ -183,6 +183,50 @@
         .mc-qtd-action {
             height: 38px;
         }
+
+        /* Skin 2D independente nesta página */
+        .mc-skin-display {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 105px;
+            margin-top: 8px;
+        }
+        #mcSkinCanvas {
+            width: 64px;
+            height: 128px;
+            image-rendering: pixelated;
+            object-fit: contain;
+        }
+        .mc-skin-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            width: 100%;
+        }
+        #mcSkinSelect {
+            min-width: 0;
+            width: 68%;
+            background: #1A1A1A;
+            color: #FFFFFF;
+            border: 1px solid #555555;
+            padding: 4px;
+            font-family: inherit;
+            font-size: 7px;
+        }
+        #mcSkinUploadBtn {
+            background: #C6C6C6;
+            color: #262626;
+            border: 2px outset #FFFFFF;
+            padding: 4px 5px;
+            font-family: inherit;
+            font-size: 7px;
+            cursor: pointer;
+        }
+
     </style>
 </head>
 <body>
@@ -263,6 +307,20 @@
                         </select>
                     </form>
                 <% } %>
+
+                <div class="mc-skin-display">
+                    <canvas id="mcSkinCanvas" width="16" height="32" aria-label="Skin do jogador"></canvas>
+                    <div class="mc-skin-bar">
+                        <select id="mcSkinSelect" aria-label="Escolher skin">
+                            <option value="/images/Skins/herobrine.png">Herobrine</option>
+                            <option value="/images/Skins/halloweensweater.png">Halloween Sweater</option>
+                            <option value="/images/Skins/ironspider.png">Iron Spider</option>
+                            <option value="/images/Skins/neondrift.png">Neon Drift</option>
+                        </select>
+                        <button type="button" id="mcSkinUploadBtn" title="Selecionar arquivo PNG">+ PNG</button>
+                        <input type="file" id="mcSkinFileInput" accept="image/png" hidden>
+                    </div>
+                </div>
             </div>
 
             <!-- COLUNA DIREITA: NOME + CORAÇÕES NA ÁREA VERDE E ESCUDO ABAIXO -->
@@ -533,6 +591,100 @@
                 fecharModalQuantidade();
             }
         });
+    </script>
+
+
+    <script>
+        (() => {
+            const mcSkinCanvas = document.getElementById('mcSkinCanvas');
+            const select = document.getElementById('mcSkinSelect');
+            const uploadButton = document.getElementById('mcSkinUploadBtn');
+            const fileInput = document.getElementById('mcSkinFileInput');
+
+            if (!mcSkinCanvas || !select || !uploadButton || !fileInput) return;
+            const fallbackSkin = '/images/Skins/herobrine.png';
+            let currentSkin = select.value || fallbackSkin;
+
+        function renderFrontSkin2D(skinSrc) {
+            const ctx = mcSkinCanvas.getContext('2d');
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => {
+                const isLegacy32 = img.height === 32;
+                mcSkinCanvas.width = 16;
+                mcSkinCanvas.height = 32;
+                ctx.imageSmoothingEnabled = false;
+                ctx.clearRect(0, 0, 16, 32);
+
+                // Cabeça + Chapéu
+                ctx.drawImage(img, 8, 8, 8, 8, 4, 0, 8, 8);
+                ctx.drawImage(img, 40, 8, 8, 8, 4, 0, 8, 8);
+                // Tronco + Jaqueta
+                ctx.drawImage(img, 20, 20, 8, 12, 4, 8, 8, 12);
+                if (!isLegacy32) ctx.drawImage(img, 20, 36, 8, 12, 4, 8, 8, 12);
+                // Braço Direito
+                ctx.drawImage(img, 44, 20, 4, 12, 0, 8, 4, 12);
+                if (!isLegacy32) ctx.drawImage(img, 44, 36, 4, 12, 0, 8, 4, 12);
+                // Braço Esquerdo
+                if (isLegacy32) {
+                    ctx.save();
+                    ctx.translate(16, 8);
+                    ctx.scale(-1, 1);
+                    ctx.drawImage(img, 44, 20, 4, 12, 0, 0, 4, 12);
+                    ctx.restore();
+                } else {
+                    ctx.drawImage(img, 36, 52, 4, 12, 12, 8, 4, 12);
+                    ctx.drawImage(img, 52, 52, 4, 12, 12, 8, 4, 12);
+                }
+                // Perna Direita
+                ctx.drawImage(img, 4, 20, 4, 12, 4, 20, 4, 12);
+                if (!isLegacy32) ctx.drawImage(img, 4, 36, 4, 12, 4, 20, 4, 12);
+                // Perna Esquerda
+                if (isLegacy32) {
+                    ctx.save();
+                    ctx.translate(12, 20);
+                    ctx.scale(-1, 1);
+                    ctx.drawImage(img, 4, 20, 4, 12, 0, 0, 4, 12);
+                    ctx.restore();
+                } else {
+                    ctx.drawImage(img, 20, 52, 4, 12, 8, 20, 4, 12);
+                    ctx.drawImage(img, 4, 52, 4, 12, 8, 20, 4, 12);
+                }
+            };
+            img.onerror = () => {
+                if (skinSrc !== '/images/Skins/herobrine.png') {
+                    renderFrontSkin2D('/images/Skins/herobrine.png');
+                }
+            };
+            img.src = skinSrc;
+        }
+
+            function loadSkin(src) {
+                currentSkin = src || fallbackSkin;
+                renderFrontSkin2D(currentSkin);
+            }
+
+            select.addEventListener('change', () => loadSkin(select.value));
+            uploadButton.addEventListener('click', () => fileInput.click());
+
+            fileInput.addEventListener('change', (event) => {
+                const file = event.target.files && event.target.files[0];
+                if (!file || file.type !== 'image/png') return;
+
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const option = document.createElement('option');
+                    option.value = reader.result;
+                    option.textContent = file.name.replace(/\\.png$/i, '');
+                    select.appendChild(option);
+                    select.value = reader.result;
+                    loadSkin(reader.result);
+                };
+                reader.readAsDataURL(file);
+            });
+
+            loadSkin(currentSkin);
+        })();
     </script>
 
 </body>

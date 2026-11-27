@@ -14,6 +14,7 @@ router.get('/', async (req, res) => {
             jogadores: jogadores,
             jogadorEditando: null
         });
+
     } catch (erro) {
         console.error(erro);
         res.status(500).send('Erro ao listar jogadores.');
@@ -43,6 +44,7 @@ router.post('/cadastrar', async (req, res) => {
         );
 
         res.redirect('/jogadores');
+
     } catch (erro) {
         console.error(erro);
         res.status(500).send('Erro ao cadastrar jogador.');
@@ -71,6 +73,7 @@ router.get('/editar/:id', async (req, res) => {
             jogadores: todosJogadores,
             jogadorEditando: jogadores[0]
         });
+
     } catch (erro) {
         console.error(erro);
         res.status(500).send('Erro ao buscar jogador.');
@@ -106,6 +109,7 @@ router.post('/editar/:id', async (req, res) => {
         );
 
         res.redirect('/jogadores');
+
     } catch (erro) {
         console.error(erro);
         res.status(500).send('Erro ao atualizar jogador.');
@@ -123,6 +127,7 @@ router.post('/excluir/:id', async (req, res) => {
         );
 
         res.redirect('/jogadores');
+
     } catch (erro) {
         console.error(erro);
         res.status(500).send(

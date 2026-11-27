@@ -102,7 +102,6 @@
                             <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>Imagem</th>
                                     <th>Apelido</th>
                                     <th>Vida</th>
                                     <th>Nível</th>
@@ -119,20 +118,7 @@
                                         <td>
                                             <%= jogador.id_jogador %>
                                         </td>
-
-                                        <td>
-                                            <% if (jogador.imagem) { %>
-
-                                                <img src="/images/<%= jogador.imagem %>" alt="Imagem do jogador"
-                                                    class="imagem-jogador">
-
-                                                <% } else { %>
-
-                                                    Sem imagem
-
-                                                    <% } %>
-                                        </td>
-
+                                        
                                         <td>
                                             <%= jogador.apelido %>
                                         </td>
