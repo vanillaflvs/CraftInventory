@@ -1,7 +1,7 @@
-/* =========================================================
-ESTILOS DO INVENTÁRIO CLÁSSICO DO MINECRAFT + JEI
+/* =====================================================================
+ESTILOS DO INVENTÁRIO CLÁSSICO DO MINECRAFT + JEI + VISUALIZADOR DE SKINS
 Caminho: public/stylesheets/inventario.css
-========================================================= */
+===================================================================== */
 
 :root {
 --mc-bg: #C6C6C6;
@@ -12,7 +12,17 @@ Caminho: public/stylesheets/inventario.css
 --mc-slot-highlight: #FFFFFF;
 }
 
-*{
+*,
+html,
+body,
+div,
+span,
+main,
+section,
+aside,
+button,
+input,
+select {
 box-sizing: border-box;
 user-select: none;
 -webkit-user-select: none;
@@ -80,7 +90,7 @@ width: 100%;
 max-width: 588px;
 }
 
-/* Seção Superior: Armaduras (esquerda), Caixa Preta Vazia (centro) e Escudo (direita) */
+/* Seção Superior: Armaduras (esquerda), Caixa Preta do Personagem (centro) e Escudo (direita) */
 .mc-top-section {
 display: flex;
 align-items: flex-end;
@@ -95,7 +105,7 @@ flex-direction: column;
 gap: 3px;
 }
 
-/* Caixa preta rebaixada onde fica o espaço vazio do personagem (162x241px) */
+/* Caixa preta rebaixada onde fica o espaço do personagem 3D (162x241px) */
 .mc-player-box {
 width: 162px;
 height: 241px;
@@ -104,6 +114,74 @@ border-top: 4px solid var(--mc-slot-shadow);
 border-left: 4px solid var(--mc-slot-shadow);
 border-right: 4px solid var(--mc-slot-highlight);
 border-bottom: 4px solid var(--mc-slot-highlight);
+position: relative;
+overflow: hidden;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+.mc-player-box canvas {
+width: 100% !important;
+height: 100% !important;
+display: block;
+cursor: grab;
+image-rendering: pixelated;
+image-rendering: crisp-edges;
+}
+
+.mc-player-box canvas:active {
+cursor: grabbing;
+}
+
+/* Barra discreta de seleção e upload de skin dentro da caixa do personagem */
+.mc-skin-bar {
+position: absolute;
+bottom: 5px;
+left: 5px;
+right: 5px;
+z-index: 8;
+display: flex;
+gap: 3px;
+opacity: 0.25;
+transition: opacity 0.15s ease;
+}
+
+.mc-player-box:hover .mc-skin-bar,
+.mc-skin-bar:focus-within {
+opacity: 1;
+}
+
+.mc-skin-select {
+flex: 1;
+min-width: 0;
+height: 22px;
+background-color: #1E1E1E;
+border: 2px solid #000000;
+box-shadow: inset 1px 1px 0px #555555;
+color: #FFFFFF;
+font-size: 6px;
+padding: 0 3px;
+cursor: pointer;
+}
+
+.mc-skin-upload-btn {
+height: 22px;
+flex-shrink: 0;
+background-color: #8B8B8B;
+border: 2px solid #000000;
+box-shadow:
+inset 1px 1px 0px #C6C6C6,
+inset -1px -1px 0px #555555;
+color: #FFFFFF;
+font-size: 6px;
+padding: 0 5px;
+text-shadow: 1px 1px 0px #3F3F3F;
+cursor: pointer;
+}
+
+.mc-skin-upload-btn:hover {
+background-color: #9B9B9B;
 }
 
 /* Grades do Inventário (3x9 e 1x9) */

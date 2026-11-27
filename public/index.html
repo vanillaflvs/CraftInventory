@@ -17,7 +17,7 @@
 
     <!-- 2. Janela Principal do Inventário Clássico do Minecraft (588px) -->
     <main class="mc-window" aria-label="Inventário do Minecraft">
-        <!-- Seção Superior: 4 Slots de Armadura, Caixa Preta Vazia do Personagem e Slot de Escudo -->
+        <!-- Seção Superior: 4 Slots de Armadura, Caixa Preta do Personagem 3D e Slot de Escudo -->
         <section class="mc-top-section">
             <!-- Coluna Vertical de Armaduras -->
             <div class="mc-armor-col">
@@ -47,8 +47,14 @@
                 </div>
             </div>
 
-            <!-- Espaço Vazio Rebaixado do Personagem (162x241px) -->
-            <div class="mc-player-box" aria-label="Espaço do Personagem"></div>
+            <!-- Espaço Rebaixado do Personagem 3D (162x241px) -->
+            <div class="mc-player-box" id="mcPlayerBox" aria-label="Espaço do Personagem">
+                <div class="mc-skin-bar">
+                    <select class="mc-skin-select" id="mcSkinSelect" aria-label="Escolher Skin"></select>
+                    <button type="button" class="mc-skin-upload-btn" id="mcSkinUploadBtn" title="Subir skin .png">+ PNG</button>
+                </div>
+                <input type="file" id="mcSkinFileInput" accept="image/png" hidden />
+            </div>
 
             <!-- Slot de Escudo / Mão Secundária -->
             <div class="mc-slot" title="Mão Secundária / Escudo">
@@ -195,6 +201,19 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import * as THREE from "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.module.js";
+
+        /**
+         * =====================================================================
+         * LISTA DE SKINS DA PASTA public/images/Skins/
+         * =====================================================================
+         */
+        const defaultSkins = [
+            { name: 'Herobrine', img: 'images/Skins/herobrine.png' },
+            { name: 'Halloween Sweater', img: 'images/Skins/halloweensweater.png' },
+            { name: 'Iron Spider', img: 'images/Skins/ironspider.png' },
+            { name: 'Neon Drift', img: 'images/Skins/neondrift.png' }
+        ];
 
         /**
          * =====================================================================
@@ -278,6 +297,16 @@
         let movingFromSlotIdx = null;
         let draggedSlotIdx = null;
 
+        // Referências e estado do Visualizador 3D de Skins
+        const mcPlayerBox = document.getElementById('mcPlayerBox');
+        const mcSkinSelect = document.getElementById('mcSkinSelect');
+        const mcSkinUploadBtn = document.getElementById('mcSkinUploadBtn');
+        const mcSkinFileInput = document.getElementById('mcSkinFileInput');
+        let availableSkins = [...defaultSkins];
+        let activeSkinImg = defaultSkins[0].img;
+        let skinMeshGroup = null;
+        let skinHeadGroup = null;
+
         // =====================================================================
         // CONEXÃO COM O BANCO DE DADOS NA NUVEM (CATÁLOGO JEI + SLOTS DO INVENTÁRIO)
         // =====================================================================
@@ -315,6 +344,7 @@
                 const invDocRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'inventory_state', 'main');
                 await setDoc(invDocRef, {
                     slots: JSON.stringify(inventorySlotsState),
+                    activeSkin: activeSkinImg,
                     updatedAt: Date.now()
                 }, { merge: true });
             } catch (err) {
@@ -350,6 +380,7 @@
                         setDoc(catalogDocRef, {
                             version: CATALOG_VERSION,
                             items: defaultJeiItems,
+                            skins: defaultSkins,
                             updatedAt: Date.now()
                         }).catch(() => {});
                     }
@@ -357,18 +388,26 @@
                     console.error('Erro ao sincronizar catálogo JEI:', err);
                 });
 
-                // 2. Sincroniza os slots do inventário do usuário no banco de dados privado
+                // 2. Sincroniza os slots do inventário e a skin ativa no banco de dados privado
                 const invDocRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'inventory_state', 'main');
                 onSnapshot(invDocRef, (snap) => {
-                    if (snap.exists() && snap.data().slots) {
-                        try {
-                            const parsed = JSON.parse(snap.data().slots);
-                            if (Array.isArray(parsed)) {
-                                inventorySlotsState = parsed;
-                                renderInventorySlots();
+                    if (snap.exists()) {
+                        const data = snap.data();
+                        if (data.slots) {
+                            try {
+                                const parsed = JSON.parse(data.slots);
+                                if (Array.isArray(parsed)) {
+                                    inventorySlotsState = parsed;
+                                    renderInventorySlots();
+                                }
+                            } catch (e) {
+                                console.error('Erro ao ler slots salvos:', e);
                             }
-                        } catch (e) {
-                            console.error('Erro ao ler slots salvos:', e);
+                        }
+                        if (data.activeSkin && data.activeSkin !== activeSkinImg) {
+                            activeSkinImg = data.activeSkin;
+                            syncSkinSelectOption(activeSkinImg);
+                            loadSkinTexture(activeSkinImg);
                         }
                     }
                 }, (err) => {
@@ -378,6 +417,268 @@
                 console.error('Falha ao conectar ao banco de dados:', error);
             }
         }
+
+        // =====================================================================
+        // RENDERIZADOR 3D DE SKIN DO MINECRAFT (UV 64x64 E 64x32)
+        // =====================================================================
+        function populateSkinSelect() {
+            mcSkinSelect.innerHTML = '';
+            availableSkins.forEach((skin) => {
+                const opt = document.createElement('option');
+                opt.value = skin.img;
+                opt.textContent = skin.name;
+                mcSkinSelect.appendChild(opt);
+            });
+            mcSkinSelect.value = activeSkinImg;
+        }
+
+        function syncSkinSelectOption(skinSrc) {
+            const exists = availableSkins.some(s => s.img === skinSrc);
+            if (!exists && skinSrc) {
+                availableSkins.push({ name: 'Skin Customizada', img: skinSrc });
+                populateSkinSelect();
+            }
+            mcSkinSelect.value = skinSrc;
+        }
+
+        function createPartBox(w, h, d, texture, u, v, texW, texH, isOverlay = false) {
+            const geom = new THREE.BoxGeometry(w, h, d);
+            const uvAttr = geom.attributes.uv;
+
+            // Ordem de faces no Three.js BoxGeometry: +X (dir), -X (esq), +Y (topo), -Y (base), +Z (frente), -Z (costas)
+            const faceRects = [
+                [u, v + d, d, h],                 // Direita (+X)
+                [u + d + w, v + d, d, h],         // Esquerda (-X)
+                [u + d, v, w, d],                 // Topo (+Y)
+                [u + d + w, v, w, d],             // Base (-Y)
+                [u + d, v + d, w, h],             // Frente (+Z)
+                [u + d + w + d, v + d, w, h]      // Costas (-Z)
+            ];
+
+            for (let f = 0; f < 6; f++) {
+                const [rx, ry, rw, rh] = faceRects[f];
+                const u0 = rx / texW;
+                const u1 = (rx + rw) / texW;
+                const v0 = 1 - (ry + rh) / texH;
+                const v1 = 1 - ry / texH;
+
+                const idx = f * 4;
+                uvAttr.setXY(idx + 0, u0, v1);
+                uvAttr.setXY(idx + 1, u1, v1);
+                uvAttr.setXY(idx + 2, u0, v0);
+                uvAttr.setXY(idx + 3, u1, v0);
+            }
+            uvAttr.needsUpdate = true;
+
+            const mat = new THREE.MeshBasicMaterial({
+                map: texture,
+                transparent: isOverlay,
+                alphaTest: isOverlay ? 0.1 : 0,
+                side: isOverlay ? THREE.DoubleSide : THREE.FrontSide
+            });
+
+            return new THREE.Mesh(geom, mat);
+        }
+
+        function buildMinecraftCharacter(texture) {
+            if (skinMeshGroup) {
+                skinMeshGroup.parent.remove(skinMeshGroup);
+            }
+
+            const texW = texture.image.width || 64;
+            const texH = texture.image.height || 64;
+            const isLegacy32 = texH === 32;
+
+            const root = new THREE.Group();
+
+            // Cabeça + Chapéu/Camada Externa
+            const headGroup = new THREE.Group();
+            headGroup.position.set(0, 10, 0);
+            const headMesh = createPartBox(8, 8, 8, texture, 0, 0, texW, texH, false);
+            headMesh.position.set(0, 4, 0);
+            headGroup.add(headMesh);
+
+            const hatMesh = createPartBox(8.7, 8.7, 8.7, texture, 32, 0, texW, texH, true);
+            hatMesh.position.set(0, 4, 0);
+            headGroup.add(hatMesh);
+            root.add(headGroup);
+            skinHeadGroup = headGroup;
+
+            // Tronco + Jaqueta
+            const bodyMesh = createPartBox(8, 12, 4, texture, 16, 16, texW, texH, false);
+            bodyMesh.position.set(0, 4, 0);
+            root.add(bodyMesh);
+
+            if (!isLegacy32) {
+                const jacketMesh = createPartBox(8.5, 12.5, 4.5, texture, 16, 32, texW, texH, true);
+                jacketMesh.position.set(0, 4, 0);
+                root.add(jacketMesh);
+            }
+
+            // Braço Direito + Manga
+            const rightArmMesh = createPartBox(4, 12, 4, texture, 40, 16, texW, texH, false);
+            rightArmMesh.position.set(-6, 4, 0);
+            rightArmMesh.rotation.z = 0.05;
+            root.add(rightArmMesh);
+
+            if (!isLegacy32) {
+                const rightSleeve = createPartBox(4.5, 12.5, 4.5, texture, 40, 32, texW, texH, true);
+                rightSleeve.position.set(-6, 4, 0);
+                rightSleeve.rotation.z = 0.05;
+                root.add(rightSleeve);
+            }
+
+            // Braço Esquerdo + Manga
+            const leftArmU = isLegacy32 ? 40 : 32;
+            const leftArmV = isLegacy32 ? 16 : 48;
+            const leftArmMesh = createPartBox(4, 12, 4, texture, leftArmU, leftArmV, texW, texH, false);
+            leftArmMesh.position.set(6, 4, 0);
+            leftArmMesh.rotation.z = -0.05;
+            root.add(leftArmMesh);
+
+            if (!isLegacy32) {
+                const leftSleeve = createPartBox(4.5, 12.5, 4.5, texture, 48, 48, texW, texH, true);
+                leftSleeve.position.set(6, 4, 0);
+                leftSleeve.rotation.z = -0.05;
+                root.add(leftSleeve);
+            }
+
+            // Perna Direita + Calça
+            const rightLegMesh = createPartBox(4, 12, 4, texture, 0, 16, texW, texH, false);
+            rightLegMesh.position.set(-2, -8, 0);
+            root.add(rightLegMesh);
+
+            if (!isLegacy32) {
+                const rightPants = createPartBox(4.5, 12.5, 4.5, texture, 0, 32, texW, texH, true);
+                rightPants.position.set(-2, -8, 0);
+                root.add(rightPants);
+            }
+
+            // Perna Esquerda + Calça
+            const leftLegU = isLegacy32 ? 0 : 16;
+            const leftLegV = isLegacy32 ? 16 : 48;
+            const leftLegMesh = createPartBox(4, 12, 4, texture, leftLegU, leftLegV, texW, texH, false);
+            leftLegMesh.position.set(2, -8, 0);
+            root.add(leftLegMesh);
+
+            if (!isLegacy32) {
+                const leftPants = createPartBox(4.5, 12.5, 4.5, texture, 0, 48, texW, texH, true);
+                leftPants.position.set(2, -8, 0);
+                root.add(leftPants);
+            }
+
+            root.position.y = -1;
+            skinMeshGroup = root;
+            return root;
+        }
+
+        let threeScene = null;
+        let threeCamera = null;
+        let threeRenderer = null;
+
+        function initSkin3DViewer() {
+            const width = mcPlayerBox.clientWidth || 154;
+            const height = mcPlayerBox.clientHeight || 233;
+
+            threeScene = new THREE.Scene();
+            threeCamera = new THREE.PerspectiveCamera(36, width / height, 0.1, 1000);
+            threeCamera.position.set(0, 2, 54);
+
+            threeRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: false });
+            threeRenderer.setSize(width, height);
+            threeRenderer.setPixelRatio(window.devicePixelRatio || 1);
+            mcPlayerBox.insertBefore(threeRenderer.domElement, mcPlayerBox.firstChild);
+
+            let isDragging = false;
+            let prevX = 0;
+            let yaw = 0.25;
+
+            threeRenderer.domElement.addEventListener('pointerdown', (e) => {
+                isDragging = true;
+                prevX = e.clientX;
+            });
+
+            window.addEventListener('pointerup', () => {
+                isDragging = false;
+            });
+
+            window.addEventListener('pointermove', (e) => {
+                if (isDragging) {
+                    const deltaX = e.clientX - prevX;
+                    prevX = e.clientX;
+                    yaw += deltaX * 0.015;
+                } else if (skinHeadGroup) {
+                    const rect = mcPlayerBox.getBoundingClientRect();
+                    const centerX = rect.left + rect.width / 2;
+                    const centerY = rect.top + rect.height * 0.28;
+                    const normX = Math.max(-1, Math.min(1, (e.clientX - centerX) / 260));
+                    const normY = Math.max(-1, Math.min(1, (e.clientY - centerY) / 260));
+                    skinHeadGroup.rotation.y = normX * 0.65;
+                    skinHeadGroup.rotation.x = normY * 0.45;
+                }
+            });
+
+            function animate() {
+                requestAnimationFrame(animate);
+                if (skinMeshGroup) {
+                    skinMeshGroup.rotation.y = yaw;
+                }
+                threeRenderer.render(threeScene, threeCamera);
+            }
+            animate();
+        }
+
+        function loadSkinTexture(skinSrc, triedGithub = false) {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => {
+                const tex = new THREE.Texture(img);
+                tex.magFilter = THREE.NearestFilter;
+                tex.minFilter = THREE.NearestFilter;
+                tex.needsUpdate = true;
+
+                const charGroup = buildMinecraftCharacter(tex);
+                if (threeScene) {
+                    threeScene.add(charGroup);
+                }
+            };
+            img.onerror = () => {
+                if (!triedGithub && skinSrc && !/^https?:\/\//i.test(skinSrc) && !skinSrc.startsWith('data:')) {
+                    loadSkinTexture(`${GITHUB_RAW_BASE}${skinSrc}`, true);
+                }
+            };
+            img.src = skinSrc;
+        }
+
+        mcSkinSelect.addEventListener('change', (e) => {
+            activeSkinImg = e.target.value;
+            loadSkinTexture(activeSkinImg);
+            saveInventoryToCloud();
+        });
+
+        mcSkinUploadBtn.addEventListener('click', () => {
+            mcSkinFileInput.click();
+        });
+
+        mcSkinFileInput.addEventListener('change', (e) => {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                const dataUrl = reader.result;
+                const label = file.name.replace(/\.png$/i, '');
+                availableSkins.push({ name: label, img: dataUrl });
+                activeSkinImg = dataUrl;
+                populateSkinSelect();
+                loadSkinTexture(activeSkinImg);
+                saveInventoryToCloud();
+            };
+            reader.readAsDataURL(file);
+        });
+
+        populateSkinSelect();
+        initSkin3DViewer();
+        loadSkinTexture(activeSkinImg);
 
         /**
          * Calcula dinamicamente quantos slots (6 colunas x N linhas)
@@ -408,6 +709,7 @@
             const slotsPerPage = getSlotsPerPage();
             const filtered = getFilteredItems();
 
+            // Mantém página única (1/1)
             const totalPages = TOTAL_PAGES;
 
             if (currentPage > totalPages) currentPage = totalPages;
@@ -437,11 +739,13 @@
                 attachImageWithFallback(img, item);
                 cell.appendChild(img);
 
+                // Clique em um item do JEI abre o quadrado para escolher a quantidade (1 a 64)
                 cell.addEventListener('click', () => {
                     mcTooltip.style.display = 'none';
                     openQuantityModal(item, null);
                 });
 
+                // Exibe tooltip clássico apenas ao passar o mouse sobre itens preenchidos
                 cell.addEventListener('mouseenter', (e) => {
                     if (!item.name) return;
                     mcTooltip.textContent = item.name;
@@ -483,6 +787,7 @@
             return TOTAL_PAGES;
         }
 
+        // Navegação pelos botões ◀ e ▶ com rotação circular
         jeiPrevPageBtn.addEventListener('click', () => {
             const totalPages = getCurrentTotalPages();
             currentPage = currentPage > 1 ? currentPage - 1 : totalPages;
@@ -495,6 +800,7 @@
             renderJeiGrid();
         });
 
+        // Navegação pela roda do mouse (scroll) sobre a grade JEI
         jeiGrid.addEventListener('wheel', (e) => {
             e.preventDefault();
             if (e.deltaY > 0) {
@@ -504,6 +810,7 @@
             }
         }, { passive: false });
 
+        // Pesquisa em tempo real pelo nome do item
         jeiSearchInput.addEventListener('input', (e) => {
             searchQuery = e.target.value;
             currentPage = 1;
@@ -511,7 +818,10 @@
             renderJeiGrid();
         });
 
+        // Recalcula automaticamente quantas linhas cabem ao redimensionar a janela
         window.addEventListener('resize', renderJeiGrid);
+
+        // Renderização inicial do painel JEI
         renderJeiGrid();
 
         // Seleção e persistência interativa dos slots do inventário
@@ -531,6 +841,7 @@
 
             const targetItem = inventorySlotsState[toIdx];
 
+            // Se forem o mesmo item, empilha até 64
             if (targetItem && targetItem.name === sourceItem.name && targetItem.img === sourceItem.img) {
                 const total = (Number(targetItem.count) || 1) + (Number(sourceItem.count) || 1);
                 if (total <= 64) {
@@ -541,6 +852,7 @@
                     inventorySlotsState[fromIdx] = { ...sourceItem, count: total - 64 };
                 }
             } else {
+                // Troca de posição ou move para slot vazio
                 inventorySlotsState[toIdx] = sourceItem;
                 inventorySlotsState[fromIdx] = targetItem || null;
             }
@@ -594,6 +906,13 @@
             });
         }
 
+        /**
+         * Retorna a ordem dos slots de baixo para cima:
+         * 1º: Barra Rápida (índices 32..40)
+         * 2º: Linha inferior do inventário (índices 23..31)
+         * 3º: Linha do meio do inventário (índices 14..22)
+         * 4º: Linha superior do inventário (índices 5..13)
+         */
         function getBottomUpSlotOrder() {
             const order = [];
             for (let i = 32; i <= 40; i++) order.push(i);
@@ -630,6 +949,7 @@
         function equipItemToInventory(item, quantity = 1) {
             const count = clampQuantity(quantity);
 
+            // Se estiver editando diretamente um slot já preenchido
             if (pendingEditSlotIdx !== null && pendingEditSlotIdx >= 0) {
                 inventorySlotsState[pendingEditSlotIdx] = {
                     name: item.name,
@@ -646,6 +966,7 @@
                 if (s.classList.contains('selected')) targetIdx = i;
             });
 
+            // Se não houver slot selecionado manualmente, preenche de baixo para cima
             if (targetIdx === -1) {
                 const bottomUpOrder = getBottomUpSlotOrder();
                 for (const idx of bottomUpOrder) {
@@ -667,6 +988,7 @@
             }
         }
 
+        // Eventos do Quadrado de Escolha de Quantidade
         mcQtyMinusBtn.addEventListener('click', () => {
             mcQtyInput.value = clampQuantity((parseInt(mcQtyInput.value, 10) || 1) - 1);
         });
@@ -710,6 +1032,7 @@
 
         inventorySlots.forEach((slot, idx) => {
             slot.addEventListener('click', () => {
+                // Se há um item marcado para mover, move/troca para o slot clicado
                 if (movingFromSlotIdx !== null) {
                     if (movingFromSlotIdx === idx) {
                         clearMovingState();
@@ -727,12 +1050,14 @@
                 inventorySlots.forEach(s => s.classList.remove('selected'));
                 slot.classList.add('selected');
 
+                // Ao clicar em um slot com item, seleciona-o para mover para outro slot ou lixeira
                 if (inventorySlotsState[idx]) {
                     movingFromSlotIdx = idx;
                     slot.classList.add('moving-source');
                 }
             });
 
+            // Duplo clique abre o quadrado de quantidade (1 a 64)
             slot.addEventListener('dblclick', () => {
                 if (inventorySlotsState[idx]) {
                     clearMovingState();
@@ -740,6 +1065,7 @@
                 }
             });
 
+            // Arrastar e soltar (Drag & Drop) entre slots do inventário
             slot.addEventListener('dragstart', (e) => {
                 if (!inventorySlotsState[idx]) {
                     e.preventDefault();
@@ -779,12 +1105,14 @@
                 mcTrashSlot.classList.remove('drag-over');
             });
 
+            // Clique direito limpa o slot e atualiza no banco de dados
             slot.addEventListener('contextmenu', (e) => {
                 e.preventDefault();
                 deleteItemAtSlot(idx);
             });
         });
 
+        // Eventos da Lixeira (clique com item selecionado ou arrastar e soltar)
         mcTrashSlot.addEventListener('click', () => {
             if (movingFromSlotIdx !== null) {
                 deleteItemAtSlot(movingFromSlotIdx);
@@ -837,6 +1165,7 @@
             }
         });
 
+        // Inicializa a sincronização com o banco de dados na nuvem
         initCloudDatabase();
     </script>
 
